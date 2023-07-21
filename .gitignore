@@ -1,1 +1,8 @@
+# core
 cache
+simc
+
+# javascript
+webserver/node_modules
+
+# python
