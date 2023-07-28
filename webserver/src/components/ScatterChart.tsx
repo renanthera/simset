@@ -1,5 +1,5 @@
 'use client'
-import React, { Component } from 'react'
+import React, { useRef } from 'react'
 import { render } from 'react-dom';
 import Highcharts from 'highcharts'
 import HighchartsBoost from "highcharts/modules/boost";
@@ -11,13 +11,16 @@ if (typeof Highcharts === 'object') {
   HighchartsBoost(Highcharts);
 }
 
-export default function ScatterChart({data}) {
+export default function ScatterChart({data, refs, id}) {
   let chartOptions = {
     chart: {
       type: 'scatter',
       zoomType: 'xy',
       width: 600,
       height: 600
+    },
+    title: {
+      text: 'id: ' + id
     },
     boost: {
       useGPUTranslations: true,
@@ -44,8 +47,9 @@ export default function ScatterChart({data}) {
   return (
     <div>
       <HighchartsReact
-      highcharts={Highcharts}
-      options={chartOptions}
+        highcharts={Highcharts}
+        options={chartOptions}
+        ref={refs}
       />
     </div>
   )
