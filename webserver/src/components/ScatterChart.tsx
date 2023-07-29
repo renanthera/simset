@@ -4,6 +4,7 @@ import Highcharts from 'highcharts'
 import HighchartsBoost from "highcharts/modules/boost";
 import HighchartsExporting from 'highcharts/modules/exporting'
 import HighchartsReact from 'highcharts-react-official'
+import { ReshapeData_Options } from './../utils/ReshapeData.tsx'
 
 if (typeof Highcharts === 'object') {
   HighchartsExporting(Highcharts);
@@ -15,8 +16,8 @@ export default function ScatterChart({data, refs, id}) {
     chart: {
       type: 'scatter',
       zoomType: 'xy',
-      width: 600,
-      height: 600
+      width: 400,
+      height: 400
     },
     title: {
       text: 'id: ' + id
@@ -25,7 +26,6 @@ export default function ScatterChart({data, refs, id}) {
       useGPUTranslations: true,
       usePreAllocated: true
     },
-    series: [{data: data}],
     plotOptions: {
       scatter: {
         marker: {
@@ -43,6 +43,8 @@ export default function ScatterChart({data, refs, id}) {
      *   { data: y }
      * ], */
   }
+  chartOptions.series = [{data: ReshapeData_Options(data, chartOptions)}]
+  console.log(chartOptions)
   return (
     <div>
       <HighchartsReact

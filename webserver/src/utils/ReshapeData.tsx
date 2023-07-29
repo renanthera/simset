@@ -16,9 +16,8 @@ export function ReshapeData(data) {
   return data.map(d => [d.x, d.y]);
 }
 
-export async function getLocalData() {
-  const filePath = path.join(process.cwd(), 'data', 'zzzzzzzzzzzzzzz', '4', 'output.json');
-  const jsonData = await fsPromises.readFile(filePath);
-  const objectData = JSON.parse(jsonData);
-  return objectData;
+export function ExtractChartDataFromJSON(json) {
+  return json.sim.profilesets.results.map( ({name, mean, iterations}) => {
+    return {name: name, y: mean, iterations: iterations, x: Math.random()}
+  });
 }

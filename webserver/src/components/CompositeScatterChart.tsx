@@ -12,17 +12,15 @@ interface Props {
 export default function CompositeScatterChart({data}: Props) {
   const refs = useRef([]);
 
-  useEffect( () => {
-    const timeoutId = setTimeout(() => {
-      console.log(refs.current)
-      for (const ref of refs.current) {
-        const d = GenerateNumbers( 100 );
-        console.log(ref, d);
-        ref.chart.series[0].setData(d);
-      }
-    }, 2000);
-    return () => clearTimeout(timeoutId);
-  }, []);
+  /* useEffect( () => {
+   *   const timeoutId = setTimeout(() => {
+   *     for (const ref of refs.current) {
+   *       const d = GenerateNumbers( 100 );
+   *       ref.chart.series[0].setData(d);
+   *     }
+   *   }, 2000);
+   *   return () => clearTimeout(timeoutId);
+   * }, []); */
 
   return (
     <>
