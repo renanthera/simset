@@ -1,6 +1,5 @@
 'use client'
-import React, { useRef } from 'react'
-import { render } from 'react-dom';
+import React from 'react'
 import Highcharts from 'highcharts'
 import HighchartsBoost from "highcharts/modules/boost";
 import HighchartsExporting from 'highcharts/modules/exporting'

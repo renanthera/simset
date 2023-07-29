@@ -1,33 +1,33 @@
+'use client'
 import ScatterChart from './../components/ScatterChart.tsx'
 import {ReshapeData} from './../utils/ReshapeData.tsx'
 import {GenerateNumbers} from './../utils/GenerateData.tsx'
-import React, {useRef, createRef, useEffect} from 'react'
+import React, {useRef, useEffect} from 'react'
 
-export default function CompositeScatterChart({data}) {
-  const count = 2;
-  let refs = useRef([]);
+const views = ["view1", "view2"];
 
-  if (refs.length !== count) {
-    refs = Array(count).fill().map( (_, i) => refs[i] || {current: null});
-  }
+interface Props {
+  data: any;
+}
+export default function CompositeScatterChart({data}: Props) {
+  const refs = useRef([]);
 
   useEffect( () => {
-    console.log(refs)
-    for (var i in refs) {
-      if (refs[i].current) {
-        setTimeout( () => {
-          const d = GenerateNumbers( 100 );
-          console.log(refs[i], d);
-          refs[i].current.chart.series[0].setData(d);
-        }, 2000)
+    const timeoutId = setTimeout(() => {
+      console.log(refs.current)
+      for (const ref of refs.current) {
+        const d = GenerateNumbers( 100 );
+        console.log(ref, d);
+        ref.chart.series[0].setData(d);
       }
-    }
-  })
+    }, 2000);
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   return (
     <>
-      {refs.map( (_, i) => (
-        <ScatterChart data={data} key={i} refs={refs[i]} id={i}/>
+      {views.map( (view, idx) => (
+        <ScatterChart key={view} data={data} refs={el => refs.current[idx] = el} id={`composite-scatter-chart-${view}`}/>
       ))}
     </>
   )
