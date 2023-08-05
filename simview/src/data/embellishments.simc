@@ -1,0 +1,108 @@
+profileset."Flaring Cowl/Shadowflame Armor Patch (W)"+=head=,id=193494,bonus_id=8836/8840/8902/8960/7936/9405/8846,ilevel=447
+profileset."Flaring Cowl/Shadowflame Armor Patch (W)"+=wrist=lifebound_bindings,id=193419,bonus_id=9379/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+
+profileset."Flaring Cowl/Shadowflame Armor Patch (B)"+=head=,id=193494,bonus_id=8836/8840/8902/8960/7936/9405/8846,ilevel=447
+profileset."Flaring Cowl/Shadowflame Armor Patch (B)"+=feet=lifebound_boots,id=193398,bonus_id=9379/8960,crafted_stats=32/36,ilevel=447
+
+profileset."Flaring Cowl/Elemental Lariat"+=head=,id=193494,bonus_id=8836/8840/8902/8960/7936/9405/8846,ilevel=447
+profileset."Flaring Cowl/Elemental Lariat"+=neck=elemental_lariat,id=193001,bonus_id=8836/8840/8902/8960/8784/8782/9405/8790/8846/9365,gem_id=192945/192945/192945,crafted_stats=49/32,ilevel=447
+
+profileset."Flaring Cowl/Toxic Thorn Footwraps"+=head=,id=193494,bonus_id=8836/8840/8902/8960/7936/9405/8846,ilevel=447
+profileset."Flaring Cowl/Toxic Thorn Footwraps"+=feet=,id=193452,enchant_id=6613,ilevel=447
+
+profileset."Flaring Cowl/Slimy Expulsion Boots"+=head=,id=193494,bonus_id=8836/8840/8902/8960/7936/9405/8846,ilevel=447
+profileset."Flaring Cowl/Slimy Expulsion Boots"+=feet=,id=193451,enchant_id=6613,ilevel=447
+
+profileset."Flaring Cowl/Toxic Armor Patch"+=head=,id=193494,bonus_id=8836/8840/8902/8960/7936/9405/8846,ilevel=447
+profileset."Flaring Cowl/Toxic Armor Patch"+=wrist=lifebound_bindings,id=193419,bonus_id=8797/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+
+profileset."Flaring Cowl/Spore Colony Shoulderguards"+=head=,id=193494,bonus_id=8836/8840/8902/8960/7936/9405/8846,ilevel=447
+profileset."Flaring Cowl/Spore Colony Shoulderguards"+=shoulder=spore_colony_shoulderguards,id=204706,ilevel=447
+
+profileset."Flaring Cowl/Infurious Footwraps of Indemnity"+=head=,id=193494,bonus_id=8836/8840/8902/8960/7936/9405/8846,ilevel=447
+profileset."Flaring Cowl/Infurious Footwraps of Indemnity"+=feet=infurious_footwraps_of_indemnity,id=193455,enchant_id=6613,ilevel=447
+
+profileset."Shadowflame Armor Patch (W)/Shadowflame Armor Patch (B)"+=wrist=lifebound_bindings,id=193419,bonus_id=9379/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Shadowflame Armor Patch (W)/Shadowflame Armor Patch (B)"+=feet=lifebound_boots,id=193398,bonus_id=9379/8960,crafted_stats=32/36,ilevel=447
+
+profileset."Shadowflame Armor Patch (W)/Elemental Lariat"+=wrist=lifebound_bindings,id=193419,bonus_id=9379/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Shadowflame Armor Patch (W)/Elemental Lariat"+=neck=elemental_lariat,id=193001,bonus_id=8836/8840/8902/8960/8784/8782/9405/8790/8846/9365,gem_id=192945/192945/192945,crafted_stats=49/32,ilevel=447
+
+profileset."Shadowflame Armor Patch (W)/Toxic Thorn Footwraps"+=wrist=lifebound_bindings,id=193419,bonus_id=9379/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Shadowflame Armor Patch (W)/Toxic Thorn Footwraps"+=feet=,id=193452,enchant_id=6613,ilevel=447
+
+profileset."Shadowflame Armor Patch (W)/Slimy Expulsion Boots"+=wrist=lifebound_bindings,id=193419,bonus_id=9379/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Shadowflame Armor Patch (W)/Slimy Expulsion Boots"+=feet=,id=193451,enchant_id=6613,ilevel=447
+
+profileset."Shadowflame Armor Patch (W)/Toxic Armor Patch"+=wrist=lifebound_bindings,id=193419,bonus_id=9379/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Shadowflame Armor Patch (W)/Toxic Armor Patch"+=wrist=lifebound_bindings,id=193419,bonus_id=8797/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+
+profileset."Shadowflame Armor Patch (W)/Spore Colony Shoulderguards"+=wrist=lifebound_bindings,id=193419,bonus_id=9379/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Shadowflame Armor Patch (W)/Spore Colony Shoulderguards"+=shoulder=spore_colony_shoulderguards,id=204706,ilevel=447
+
+profileset."Shadowflame Armor Patch (W)/Infurious Footwraps of Indemnity"+=wrist=lifebound_bindings,id=193419,bonus_id=9379/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Shadowflame Armor Patch (W)/Infurious Footwraps of Indemnity"+=feet=infurious_footwraps_of_indemnity,id=193455,enchant_id=6613,ilevel=447
+
+profileset."Shadowflame Armor Patch (B)/Elemental Lariat"+=feet=lifebound_boots,id=193398,bonus_id=9379/8960,crafted_stats=32/36,ilevel=447
+profileset."Shadowflame Armor Patch (B)/Elemental Lariat"+=neck=elemental_lariat,id=193001,bonus_id=8836/8840/8902/8960/8784/8782/9405/8790/8846/9365,gem_id=192945/192945/192945,crafted_stats=49/32,ilevel=447
+
+profileset."Shadowflame Armor Patch (B)/Toxic Thorn Footwraps"+=feet=lifebound_boots,id=193398,bonus_id=9379/8960,crafted_stats=32/36,ilevel=447
+profileset."Shadowflame Armor Patch (B)/Toxic Thorn Footwraps"+=feet=,id=193452,enchant_id=6613,ilevel=447
+
+profileset."Shadowflame Armor Patch (B)/Slimy Expulsion Boots"+=feet=lifebound_boots,id=193398,bonus_id=9379/8960,crafted_stats=32/36,ilevel=447
+profileset."Shadowflame Armor Patch (B)/Slimy Expulsion Boots"+=feet=,id=193451,enchant_id=6613,ilevel=447
+
+profileset."Shadowflame Armor Patch (B)/Toxic Armor Patch"+=feet=lifebound_boots,id=193398,bonus_id=9379/8960,crafted_stats=32/36,ilevel=447
+profileset."Shadowflame Armor Patch (B)/Toxic Armor Patch"+=wrist=lifebound_bindings,id=193419,bonus_id=8797/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+
+profileset."Shadowflame Armor Patch (B)/Spore Colony Shoulderguards"+=feet=lifebound_boots,id=193398,bonus_id=9379/8960,crafted_stats=32/36,ilevel=447
+profileset."Shadowflame Armor Patch (B)/Spore Colony Shoulderguards"+=shoulder=spore_colony_shoulderguards,id=204706,ilevel=447
+
+profileset."Shadowflame Armor Patch (B)/Infurious Footwraps of Indemnity"+=feet=lifebound_boots,id=193398,bonus_id=9379/8960,crafted_stats=32/36,ilevel=447
+profileset."Shadowflame Armor Patch (B)/Infurious Footwraps of Indemnity"+=feet=infurious_footwraps_of_indemnity,id=193455,enchant_id=6613,ilevel=447
+
+profileset."Elemental Lariat/Toxic Thorn Footwraps"+=neck=elemental_lariat,id=193001,bonus_id=8836/8840/8902/8960/8784/8782/9405/8790/8846/9365,gem_id=192945/192945/192945,crafted_stats=49/32,ilevel=447
+profileset."Elemental Lariat/Toxic Thorn Footwraps"+=feet=,id=193452,enchant_id=6613,ilevel=447
+
+profileset."Elemental Lariat/Slimy Expulsion Boots"+=neck=elemental_lariat,id=193001,bonus_id=8836/8840/8902/8960/8784/8782/9405/8790/8846/9365,gem_id=192945/192945/192945,crafted_stats=49/32,ilevel=447
+profileset."Elemental Lariat/Slimy Expulsion Boots"+=feet=,id=193451,enchant_id=6613,ilevel=447
+
+profileset."Elemental Lariat/Toxic Armor Patch"+=neck=elemental_lariat,id=193001,bonus_id=8836/8840/8902/8960/8784/8782/9405/8790/8846/9365,gem_id=192945/192945/192945,crafted_stats=49/32,ilevel=447
+profileset."Elemental Lariat/Toxic Armor Patch"+=wrist=lifebound_bindings,id=193419,bonus_id=8797/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+
+profileset."Elemental Lariat/Spore Colony Shoulderguards"+=neck=elemental_lariat,id=193001,bonus_id=8836/8840/8902/8960/8784/8782/9405/8790/8846/9365,gem_id=192945/192945/192945,crafted_stats=49/32,ilevel=447
+profileset."Elemental Lariat/Spore Colony Shoulderguards"+=shoulder=spore_colony_shoulderguards,id=204706,ilevel=447
+
+profileset."Elemental Lariat/Infurious Footwraps of Indemnity"+=neck=elemental_lariat,id=193001,bonus_id=8836/8840/8902/8960/8784/8782/9405/8790/8846/9365,gem_id=192945/192945/192945,crafted_stats=49/32,ilevel=447
+profileset."Elemental Lariat/Infurious Footwraps of Indemnity"+=feet=infurious_footwraps_of_indemnity,id=193455,enchant_id=6613,ilevel=447
+
+profileset."Toxic Thorn Footwraps/Slimy Expulsion Boots"+=feet=,id=193452,enchant_id=6613,ilevel=447
+profileset."Toxic Thorn Footwraps/Slimy Expulsion Boots"+=feet=,id=193451,enchant_id=6613,ilevel=447
+
+profileset."Toxic Thorn Footwraps/Toxic Armor Patch"+=feet=,id=193452,enchant_id=6613,ilevel=447
+profileset."Toxic Thorn Footwraps/Toxic Armor Patch"+=wrist=lifebound_bindings,id=193419,bonus_id=8797/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+
+profileset."Toxic Thorn Footwraps/Spore Colony Shoulderguards"+=feet=,id=193452,enchant_id=6613,ilevel=447
+profileset."Toxic Thorn Footwraps/Spore Colony Shoulderguards"+=shoulder=spore_colony_shoulderguards,id=204706,ilevel=447
+
+profileset."Toxic Thorn Footwraps/Infurious Footwraps of Indemnity"+=feet=,id=193452,enchant_id=6613,ilevel=447
+profileset."Toxic Thorn Footwraps/Infurious Footwraps of Indemnity"+=feet=infurious_footwraps_of_indemnity,id=193455,enchant_id=6613,ilevel=447
+
+profileset."Slimy Expulsion Boots/Toxic Armor Patch"+=feet=,id=193451,enchant_id=6613,ilevel=447
+profileset."Slimy Expulsion Boots/Toxic Armor Patch"+=wrist=lifebound_bindings,id=193419,bonus_id=8797/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+
+profileset."Slimy Expulsion Boots/Spore Colony Shoulderguards"+=feet=,id=193451,enchant_id=6613,ilevel=447
+profileset."Slimy Expulsion Boots/Spore Colony Shoulderguards"+=shoulder=spore_colony_shoulderguards,id=204706,ilevel=447
+
+profileset."Slimy Expulsion Boots/Infurious Footwraps of Indemnity"+=feet=,id=193451,enchant_id=6613,ilevel=447
+profileset."Slimy Expulsion Boots/Infurious Footwraps of Indemnity"+=feet=infurious_footwraps_of_indemnity,id=193455,enchant_id=6613,ilevel=447
+
+profileset."Toxic Armor Patch/Spore Colony Shoulderguards"+=wrist=lifebound_bindings,id=193419,bonus_id=8797/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Toxic Armor Patch/Spore Colony Shoulderguards"+=shoulder=spore_colony_shoulderguards,id=204706,ilevel=447
+
+profileset."Toxic Armor Patch/Infurious Footwraps of Indemnity"+=wrist=lifebound_bindings,id=193419,bonus_id=8797/8960,crafted_stats=32/36,gem_id=192945,ilevel=447
+profileset."Toxic Armor Patch/Infurious Footwraps of Indemnity"+=feet=infurious_footwraps_of_indemnity,id=193455,enchant_id=6613,ilevel=447
+
+profileset."Spore Colony Shoulderguards/Infurious Footwraps of Indemnity"+=shoulder=spore_colony_shoulderguards,id=204706,ilevel=447
+profileset."Spore Colony Shoulderguards/Infurious Footwraps of Indemnity"+=feet=infurious_footwraps_of_indemnity,id=193455,enchant_id=6613,ilevel=447
+
