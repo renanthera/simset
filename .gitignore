@@ -16,6 +16,7 @@ src/data
 
 # production
 /build
+*bin*
 
 # misc
 .DS_Store
