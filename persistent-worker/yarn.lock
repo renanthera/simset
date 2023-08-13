@@ -423,6 +423,7 @@ __metadata:
     "@types/node": ^20.4.7
     fastify: ^4.21.0
     ofetch: ^1.1.1
+    queue: ^7.0.0
     tsx: ^3.12.7
     typescript: ^5.1.6
   languageName: unknown
@@ -1483,6 +1484,13 @@ __metadata:
   version: 2.3.0
   resolution: "punycode@npm:2.3.0"
   checksum: 39f760e09a2a3bbfe8f5287cf733ecdad69d6af2fe6f97ca95f24b8921858b91e9ea3c9eeec6e08cede96181b3bb33f95c6ffd8c77e63986508aa2e8159fa200
+  languageName: node
+  linkType: hard
+
+"queue@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "queue@npm:7.0.0"
+  checksum: a1d91621e011000502bcc589e58cc7c44ca613c0cd39a04933977bad733d9eb66303b5ee1bbb359b03db248d9c50df793f6d405ce3139cb79a8d5deb5eb97bcb
   languageName: node
   linkType: hard
 

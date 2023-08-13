@@ -5,51 +5,38 @@ import {
   FastifyReply
 } from 'fastify'
 
-import run_sim from '~/sims/runSim.ts'
+import run_sim from '~/sims/runSim'
+import validator from '~/utils/RequestValidation'
+import sim_queue from '~/sims/SimQueue'
 
-type UpdateAPIKeyRequest = FastifyRequest<{ Body: { new_key: string } }>
-type CreateNewSimRequest = FastifyRequest<{ Body: string }>
+type UpdateAPIKey = FastifyRequest<{ Body: { new_key: string } }>
+type EnqueueSim = FastifyRequest<{ Body: { name: string, contents: string } }>
+type CheckSimPosition    = FastifyRequest<{ Body: { name: string, contents: string } }>
 
-// -1 line, +19 lines.
-class RequestValidation {
-  private key: string;
-  private keyfile: string;
+export async function routes(app: FastifyInstance) {
 
-  constructor() {
-    // TODO: load from persistent keyfile
-    this.key = 'asdf'
-  }
-
-  validateRequest(req: FastifyRequest) {
-    const { authorization } = req.headers
-    if (authorization === this.key) {
-      return true
-    }
-    return false
-  }
-
-  updateKey(new_key: string) {
-    // TODO: update keyfile
-    this.key = new_key
-    return true
-  }
-}
-
-export async function routes(app: FastifyInstance, _: FastifyPluginOptions) {
-  const validator = new RequestValidation()
-
-  app.post('/api/keys', (req: UpdateAPIKeyRequest, _: FastifyReply) => {
-    const candidate_key = req.body.new_key
-    validator.updateKey(candidate_key)
-    return { new_key: candidate_key }
+  app.post('/api/keys', (req: UpdateAPIKey) => {
+    const { new_key } = req.body
+    validator.updateKey(new_key)
+    return { new_key: new_key }
   })
 
-  app.post('/api/create_sim', async (req: CreateNewSimRequest, res: FastifyReply) => {
+  app.post('/api/create_sim', (req: EnqueueSim, res: FastifyReply) => {
     const { body } = req
-    // TODO: Replace this with sim results, not stdout from run_sim
-    const resp = await run_sim(body)
-    res.code(200)
-    res.send(resp)
+    sim_queue.push(_ => {
+      return run_sim(body)
+    })
+    res.code(202)
+    res.send('OK')
+  })
+
+  app.get('/api/queue/length', () => {
+    return { queue_length: sim_queue.length}
+  })
+
+  app.get('/api/queue/position', (req: CheckSimPosition) => {
+    const { body } = req
+    return { queue_position: sim_queue.indexOf(body) }
   })
 
   app.addHook('onRequest', (req: FastifyRequest, res: FastifyReply, done: (err?: Error) => void) => {

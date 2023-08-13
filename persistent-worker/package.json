@@ -9,6 +9,7 @@
     "@types/node": "^20.4.7",
     "fastify": "^4.21.0",
     "ofetch": "^1.1.1",
+    "queue": "^7.0.0",
     "typescript": "^5.1.6"
   },
   "scripts": {

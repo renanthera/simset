@@ -1,14 +1,14 @@
 'use client'
 import useSWR from 'swr';
-import CompositeScatterChart from './../components/CompositeScatterChart.tsx'
-import WorkerStatus from './../components/WorkerStatus.tsx'
+import CompositeScatterChart from '~/components/CompositeScatterChart'
+import WorkerStatus from '~/components/WorkerStatus'
 
-import { fetchJSON } from './../utils/FetchData.ts'
-import { ExtractChartDataFromJSON } from './../utils/ReshapeData.tsx'
+import { fetchJSON } from '~/utils/FetchData'
+import { ExtractChartDataFromJSON } from '~/utils/ReshapeData'
 
 
 export default function Home() {
-  const { data, error, isLoading } = useSWR('/api/sample/1/output.json', fetchJSON)
+  const { data, error, isLoading } = useSWR('/api/data/sample/1/output.json', fetchJSON)
 
   if (isLoading) return (<div>Loading...</div>)
   if (error) return (<div>Failed to load</div>)
@@ -17,8 +17,11 @@ export default function Home() {
 
     return (
       <>
-        <CompositeScatterChart data={sim_data}/>
-        <WorkerStatus/>
+        <WorkerStatus />
+        <pre>
+        {'\n\n\n\n'}
+        </pre>
+        <CompositeScatterChart data={sim_data} />
         {/* <PrettyPrintJson data={sim_data}/> */}
       </>
     )
