@@ -1,41 +1,49 @@
 import { spawn } from 'child_process'
 import ofetch_wrapper from '~/utils/PostToWebserver'
 
-
 function parse_body(body: string) {
   return body.split(' ')
 }
 
-type SimBody = {
-  name: string,
-  contents: string
+type Body = {
+  id: string,
+  content: string
 }
 
-export default function run_sim(sim_body: SimBody) {
-  const { name } = sim_body
-  return new Promise(resolve => {
-    let response = ''
+export default class Sim {
+  id: number
+  content: Array<string>
+  response: string
 
-    const proc = spawn('./simc', parse_body(sim_body.contents))
+  constructor(body: Body) {
+    this.id = body.id
+    this.content = body.content.split(' ')
+    this.response = ''
+  }
 
-    proc.stdout.on('data', (chunk) => {
-      const contents = chunk.toString()
-      if (contents) {
-        const body = {
-          name: name,
-          contents: contents
+  runSim() {
+    return new Promise( resolve => {
+      const proc = spawn('./simc', this.content)
+
+      proc.stdout.on('data', chunk => {
+        const content = chunk.toString()
+        if (content) {
+          const body = {
+            id: this.id,
+            content: content
+          }
+          ofetch_wrapper('/api/worker/processing', body)
+          this.response += content
         }
-        ofetch_wrapper('/api/worker/status', body)
-      }
-      response += contents
-    })
+      })
 
-    proc.on('close', () => {
-      const resp = {
-        contents: response,
-        name: sim_body.name
-      }
-      resolve(resp)
+      proc.on('close', () => {
+        const body = {
+          id: this.id,
+          content: this.response
+        }
+        resolve(body)
+      })
     })
-  })
+  }
 }

@@ -5,40 +5,46 @@ import {
   FastifyReply
 } from 'fastify'
 
-import run_sim from '~/sims/runSim'
+import Sim from '~/sims/runSim'
 import validator from '~/utils/RequestValidation'
 import sim_queue from '~/sims/SimQueue'
 
 type UpdateAPIKey = FastifyRequest<{ Body: { new_key: string } }>
-type EnqueueSim = FastifyRequest<{ Body: { name: string, contents: string } }>
-type CheckSimPosition    = FastifyRequest<{ Body: { name: string, contents: string } }>
+type EnqueueSim = FastifyRequest<{ Body: { id: string, content: string } }>
 
 export async function routes(app: FastifyInstance) {
-
-  app.post('/api/keys', (req: UpdateAPIKey) => {
+  // API
+  // pUPDATE: UPDATE API KEY
+  app.post('/keys/update', (req: UpdateAPIKey) => {
     const { new_key } = req.body
     validator.updateKey(new_key)
     return { new_key: new_key }
   })
 
-  app.post('/api/create_sim', (req: EnqueueSim, res: FastifyReply) => {
+  // WORKER:
+  // pCREATE: ENQUEUE JOB
+  app.post('/worker/create', (req: EnqueueSim, res: FastifyReply) => {
     const { body } = req
-    sim_queue.push(_ => {
-      return run_sim(body)
-    })
+    const sim = new Sim(body)
+
+    sim_queue.push(() => sim.runSim())
+
     res.code(202)
     res.send('OK')
   })
 
-  app.get('/api/queue/length', () => {
-    return { queue_length: sim_queue.length}
+  // TODO: gSTATUS: ID OF CURRENT JOB BEING PROCESSED
+  // do not believe this is presently possible
+  app.post('/worker/status', () => {
+    return { UNIMPLEMENTED: null }
   })
 
-  app.get('/api/queue/position', (req: CheckSimPosition) => {
-    const { body } = req
-    return { queue_position: sim_queue.indexOf(body) }
+  // gQUEUE LENGTH: NUMBER OF JOBS IN QUEUE
+  app.post('/worker/queue', () => {
+    return { length: sim_queue.length }
   })
 
+  // Validate all requests contain API key in header 'authorization'
   app.addHook('onRequest', (req: FastifyRequest, res: FastifyReply, done: (err?: Error) => void) => {
     if (validator.validateRequest(req)) {
       done()

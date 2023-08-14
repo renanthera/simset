@@ -1,24 +1,40 @@
-import { worker } from '~/utils/CacheWorkerStatus'
+import {
+  createSim,
+  updateSim,
+  allSims
+} from '~/database/Sim'
 
 export async function POST(
   request: Request,
-  { params }: { params: { worker: Array<string> }}) {
+  { params }: { params: { worker: Array<string> } }
+) {
 
   const data = await request.json()
-  const { contents } = data
+  const { content } = data
+  const { id } = data
+  const event = params.worker.join()
+  let sim
 
-  console.log(params)
-  switch (params.worker.join()) {
-    case ('success'):
-      // console.log(contents)
-      break
-    case ('status'):
-      worker.updateStatus(contents)
-      console.log('worker status updated: ', worker.status)
-      break
-    default:
-      console.log('worker endpoint fell through')
+  if (id && content) {
+    switch (event) {
+      case 'success':
+        sim = await updateSim(id, event, content)
+        break
+      case 'create':
+        sim = await createSim(content)
+        break
+      default:
+        sim = await updateSim(id, event)
+    }
   }
+  console.log(sim.id, sim.createdAt, sim.updatedAt, sim.status)
 
   return new Response('OK')
+}
+
+export async function GET(
+  request: Request,
+  { params }: { params: { worker: Array<string> } }
+) {
+  return new Response({ data: await allSims() })
 }
