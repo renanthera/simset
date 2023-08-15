@@ -13,5 +13,8 @@ model Sim {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     status String
+    parameters String
+    stdout String?
+    stderr String?
     content String?
 }

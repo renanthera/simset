@@ -1,7 +1,5 @@
 import Queue from 'queue'
 
-import ofetch_wrapper from '~/utils/PostToWebserver'
-
 const queue_config = {
   concurrency: 1,
   autostart: true
@@ -14,17 +12,12 @@ sim_queue.addEventListener('start', () => {
 })
 
 sim_queue.addEventListener('success', e => {
-  const result = e.detail.result[0]
-  const body = {
-    id: result.id,
-    content: result.content
-  }
-  ofetch_wrapper('/api/worker/success', body)
-  console.log('finishing job')
+  const { id } = e.detail.result[0]
+  console.log('finished job: ', id)
 })
 
 sim_queue.addEventListener('end', () => {
-  console.log('ended queue')
+  console.log('queue clear')
 })
 
 sim_queue.addEventListener('timeout', e => {

@@ -9,7 +9,7 @@ export async function createSim(content: string) {
   const sim = await prisma.sim.create({
     data: {
       status: 'initialized',
-      content: content
+      parameters: content
     }
   })
   const body = {
@@ -26,34 +26,27 @@ export async function createSim(content: string) {
   return sim
 }
 
-export async function updateSim(id: number, status: string, content?: string,) {
-  if (content) {
-    return await prisma.sim.update({
-      where: {
-        id: id
-      },
-      data: {
-        status: status,
-        content: content
-      }
-    })
-  }
+export async function updateSim(update_payload) {
+  const { id } = update_payload
   return await prisma.sim.update({
     where: {
       id: id
     },
-    data: {
-      status: status
-    }
+    data: update_payload
   })
 }
 
 export async function querySim(id: number) {
-  return await prisma.sim.findUnique({
-    where: {
-      id: id
-    }
-  })
+  try {
+    return await prisma.sim.findUnique({
+      where: {
+        id: id
+      }
+    })
+  }
+  catch (err) {
+    return { err: err }
+  }
 }
 
 export async function allSims() {

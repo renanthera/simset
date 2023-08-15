@@ -8,7 +8,7 @@ import { ExtractChartDataFromJSON } from '~/utils/ReshapeData'
 
 
 export default function Home() {
-  const { data, error, isLoading } = useSWR('/api/data/sample/1/output.json', fetchJSON)
+  const { data, error, isLoading } = useSWR('/api/worker/get/5', fetchJSON)
 
   if (isLoading) return (<div>Loading...</div>)
   if (error) return (<div>Failed to load</div>)
