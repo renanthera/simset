@@ -1,5 +1,7 @@
 import resolveConfig from 'tailwindcss/resolveConfig'
-import tailwindConfig from './../../tailwind.config.js'
+import tailwindConfig from '~/../tailwind.config.js'
+
+const colors = resolveConfig(tailwindConfig).theme.colors
 
 export function all_sims(data) {
   return {
@@ -51,7 +53,7 @@ export function scatter_base({key, data}) {
       }],
       "mark": {
         "type": "circle",
-        "color": "#ff0000",
+        "color": colors.bittersweet[500],
         "size": key === "All Sims" ? 4 : 32,
         "tooltip": key === "All Sims" ? false : {"content": "data"}
       },
@@ -90,34 +92,27 @@ function calculateExtrema(d) {
   return [0, 1]
 }
 
-
-const colors = resolveConfig(tailwindConfig).theme.colors
-const transparent = colors.transparent
-const lightColor = colors.chart.lightColor
-const darkColor = colors.chart.darkColor
-const accent = colors.chart.accent
-
 function theming() {
   return {
     "width": "container",
     "height": "container",
     "config": {
-      "background": transparent,
+      "background": colors.transparent,
       "title": {
-        "color": lightColor,
-        "subtitleColor": lightColor
+        "color": colors.woodsmoke[100],
+        "subtitleColor": colors.woodsmoke[100]
       },
       "axis": {
-        "domainColor": darkColor,
-        "gridColor": darkColor,
-        "tickColor": transparent
+        "domainColor": colors.woodsmoke[800],
+        "gridColor": colors.woodsmoke[800],
+        "tickColor": colors.transparent
       },
       "style": {
         "guide-label": {
-          "fill": lightColor
+          "fill": colors.woodsmoke[100]
         },
         "guide-title": {
-          "fill": lightColor
+          "fill": colors.woodsmoke[100]
         }
       }
     }
