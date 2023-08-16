@@ -76,18 +76,6 @@ module.exports = {
           '900': '#1c465e',
           '950': '#122d3f',
       },
-      // black: colors.black,
-      // white: colors.white,
-      // gray: colors.slate,
-      // green: colors.emerald,
-      // purple: colors.violet,
-      // yellow: colors.amber,
-      // pink: colors.fuchsia,
-      'chart': {
-        'lightColor': '#d1d5db',
-        'darkColor': '#30353d',
-        'accent': '#ff0000'
-      }
     },
     extend: {
       backgroundImage: {
@@ -98,6 +86,7 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/typography')
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms')
   ],
 }

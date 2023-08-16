@@ -36,6 +36,7 @@
     "vega-lite": "^5.14.1"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.4",
     "@yarnpkg/pnpify": "^4.0.0-rc.48",
     "supports-color": "^8.1.1"
   }

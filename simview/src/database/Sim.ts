@@ -36,19 +36,35 @@ export async function updateSim(update_payload) {
   })
 }
 
-export async function querySim(id: number) {
-  try {
-    return await prisma.sim.findUnique({
-      where: {
-        id: id
-      }
-    })
-  }
-  catch (err) {
-    return { err: err }
-  }
+type Select = {
+  id: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  status?: boolean
+  parameters?: boolean
+  stdout?: boolean
+  stderr?: boolean
+  content?: boolean
 }
 
-export async function allSims() {
-  return await prisma.sim.findMany()
+export type Query = {
+  id?: Array<number>
+  select?: Select
+}
+
+export async function querySims(param) {
+  const { id } = param
+  const { select } = param
+  let id_selector = {}
+  if (id) {
+    id_selector = { where: { id: { in: id } } }
+  }
+  const query = {...id_selector, select}
+  const body = await prisma.sim.findMany(query)
+
+  // reparse content as JSON
+  for (var element of body) {
+    element.content = JSON.parse(element.content)
+  }
+  return body
 }

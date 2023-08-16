@@ -13,7 +13,10 @@ export const metadata: Metadata = {
 const root_css = [
   'bg-woodsmoke-950',
   'text-woodsmoke-100',
-  'm-4'
+  'mt-0',
+  'mb-4',
+  'ml-4',
+  'mr-4'
 ]
 
 export default function RootLayout({
