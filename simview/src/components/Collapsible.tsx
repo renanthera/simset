@@ -8,8 +8,8 @@ function FullBar({ className, children, callback, notState, ...props }) {
       <div>
         {children}
       </div>
-      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
-        <polygon points="0,0 10,5, 0,10" transform-origin="center" transform={rotation}/>
+      <svg className="fill-medium-purple-200" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
+        <polygon points="0,0 10,5, 0,10" transformOrigin="center" transform={rotation}/>
       </svg>
     </div>
   )
@@ -17,7 +17,7 @@ function FullBar({ className, children, callback, notState, ...props }) {
 
 // has to be the opposite to not be a truthy nightmare
 // produces some yummy double negatives
-export default function Collapsible({children, Bar, hidden, className}) {
+export function Collapsible({children, Bar, hidden, className}) {
   const collapse_styling = ' border-solid rounded-lg border-2 border-woodsmoke-700'
   const [notVisible, toggleVisibility] = useState(hidden)
 

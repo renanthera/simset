@@ -11,22 +11,18 @@ export async function POST(
   const { content } = data
   const { id } = data
   const event = params.worker[0]
-  let sim
 
-  if (id && content) {
-    switch (event) {
-      case 'success':
-        sim = await updateSim(data)
-        break
-      case 'create':
-        sim = await createSim(content)
-        break
-      case 'processing':
-        sim = await updateSim(data)
-        break
-      default:
-        sim = await updateSim(data)
-    }
+  switch (event) {
+    case 'success':
+      if (id && content) await updateSim(data)
+      break
+    case 'create':
+      if (data) await createSim(data)
+      break
+    case 'processing':
+      if (id && content) await updateSim(data)
+      break
+    default:
   }
   return new Response('OK')
 }

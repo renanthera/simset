@@ -1,29 +1,38 @@
 import prisma from '~/database/Database'
 
+import {
+  FormData,
+  createSimParameters
+} from '~/utils/CreateSim'
+
 const headers = {
   'authorization': 'asdf',
   'content-type': 'application/json'
 }
 
-export async function createSim(content: string) {
+export async function createSim(content: FormData) {
+  // console.log(content)
   const sim = await prisma.sim.create({
     data: {
       status: 'initialized',
-      parameters: content
+      parameters: JSON.stringify(content)
     }
   })
-  const body = {
-    id: sim.id,
-    content: content
-  }
-  const fetch_configuration = {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: headers
-  }
-  const send_to_worker = await fetch('http://localhost:3001/worker/create', fetch_configuration)
+  const { parameters, combinations } = createSimParameters(content, sim.id)
+  console.log(parameters)
+  console.log(combinations)
+  // const body = {
+  //   id: sim.id,
+  //   content: content
+  // }
+  // const fetch_configuration = {
+  //   method: 'POST',
+  //   body: JSON.stringify(body),
+  //   headers: headers
+  // }
+  // const send_to_worker = await fetch('http://localhost:3001/worker/create', fetch_configuration)
 
-  return sim
+  // return sim
 }
 
 export async function updateSim(update_payload) {
@@ -55,16 +64,20 @@ export type Query = {
 export async function querySims(param) {
   const { id } = param
   const { select } = param
-  let id_selector = {}
-  if (id) {
-    id_selector = { where: { id: { in: id } } }
+  const query = {
+    select: select,
+    id: id ? { where: { id: { in: id } } } : undefined
   }
-  const query = {...id_selector, select}
   const body = await prisma.sim.findMany(query)
 
-  // reparse content as JSON
+  // reparse content and parameters as JSON
   for (var element of body) {
-    element.content = JSON.parse(element.content)
+    if (element.content) {
+      element.content = JSON.parse(element.content)
+    }
+    if (element.parameters) {
+      element.parameters = JSON.parse(element.parameters)
+    }
   }
   return body
 }

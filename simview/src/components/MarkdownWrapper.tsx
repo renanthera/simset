@@ -3,6 +3,7 @@ import fs from 'fs'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import reactGfm from 'remark-gfm'
+import { generateSlug } from '~/utils/IDSlugGenerator'
 
 async function readData(filename) {
   `use server`
@@ -16,17 +17,6 @@ const prose_config = [
   'prose-a:text-current',
   'prose-a:no-underline'
 ]
-
-const generateSlug = (string) => {
-  let str = string.replace(/^\s+|\s+$/g, "");
-  str = str.toLowerCase();
-  str = str
-    .replace(/[^a-z0-9 -]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-
-  return str;
-}
 
 function replace_headings(props) {
   const { level } = props
