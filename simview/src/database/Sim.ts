@@ -2,8 +2,12 @@ import prisma from '~/database/Database'
 
 import {
   FormData,
-  createSimParameters
+  parseSimParameters
 } from '~/utils/CreateSim'
+
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
 
 const headers = {
   'authorization': 'asdf',
@@ -11,28 +15,28 @@ const headers = {
 }
 
 export async function createSim(content: FormData) {
-  // console.log(content)
+  const parsedParameters = parseSimParameters(content)
   const sim = await prisma.sim.create({
     data: {
       status: 'initialized',
-      parameters: JSON.stringify(content)
+      parameters: JSON.stringify(parsedParameters)
     }
   })
-  const { parameters, combinations } = createSimParameters(content, sim.id)
-  console.log(parameters)
-  console.log(combinations)
-  // const body = {
-  //   id: sim.id,
-  //   content: content
-  // }
-  // const fetch_configuration = {
-  //   method: 'POST',
-  //   body: JSON.stringify(body),
-  //   headers: headers
-  // }
-  // const send_to_worker = await fetch('http://localhost:3001/worker/create', fetch_configuration)
+  const body = {
+    id: sim.id,
+    parameters: parsedParameters
+  }
+  const fetch_configuration = {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: headers
+  }
+  const send_to_worker = await fetch(
+    'http://localhost:3001/worker/create',
+    fetch_configuration
+  )
 
-  // return sim
+  return sim
 }
 
 export async function updateSim(update_payload) {
@@ -57,16 +61,29 @@ type Select = {
 }
 
 export type Query = {
-  id?: Array<number>
-  select?: Select
+  id: Array<string>
+  select: Array<string>
 }
 
-export async function querySims(param) {
+export async function querySims(param: Query) {
   const { id } = param
   const { select } = param
+
+  let idQuery = {}
+  let selectQuery = {}
+  if (id) {
+    if (id !== 'all') {
+      idQuery = { where: { id: { in: id.split(',') } } }
+    }
+  }
+  if (select) {
+    if (select !== 'all') {
+      selectQuery = {select: select.split(',').map(v => { return { [v]: true } }).reduce( (k, v) => Object.assign(k,v)) }
+    }
+  }
   const query = {
-    select: select,
-    id: id ? { where: { id: { in: id } } } : undefined
+    ...idQuery,
+    ...selectQuery
   }
   const body = await prisma.sim.findMany(query)
 

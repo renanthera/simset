@@ -1,20 +1,9 @@
 import {
-  filterParameters,
-  findTemplates,
-  filterTemplates,
-  mapTemplates,
-  stripWhitespaceAndComments,
-  Template
+  findTemplatesRaw,
+  isPresent,
+  filterStrings,
+  objectMap
 } from '~/utils/SimFilters'
-
-const isPresent = <T>(x: T | null | undefined): x is T => x !== null && x !== undefined;
-
-export type FormData = {
-  characterConfiguration: Array<string>
-  apl: Array<string>
-  fixedCombination: Array<string>
-  reducibleCombination: Array<string>
-}
 
 const blacklistParameters = [
   'threads',
@@ -22,6 +11,7 @@ const blacklistParameters = [
   'target_error',
   'single_actor_batch',
   'output',
+  'html',
   'xml',
   'json',
   'json2',
@@ -38,44 +28,35 @@ const blacklistParameters = [
   'dps_plot_iterations',
 ]
 
-class SimConfiguration {
-  content: string
-  templates: Array<Template>
-  characterConfiguration: Array<string>
-
-  constructor() {
-    this.content = ''
-    this.templates = []
-    this.characterConfiguration = []
-  }
+export type FormData = {
+  characterConfiguration: Array<Array<string>>
+  apl: Array<Array<string>>
+  fixedCombination: Array<Array<string>>
+  reducibleCombination: Array<Array<string>>
 }
 
-export function createSimParameters(content: FormData, id: number) {
-  let simConfig = new SimConfiguration()
+// templates may operate in unexpected ways.
+// avoid defining them multiple times
+export function parseSimParameters(content: FormData) {
+  // gather all templates from all input
+  // flatten as input has dim >= 2
+  // remove undefined/nulls
+  const templates = Object.entries(content).map( ([k, v], i) => {
+    return v.map(findTemplatesRaw)
+  }).flat(Infinity).filter(isPresent)
 
-  const { characterConfiguration } = content
+  // for all entries in entries in content...
+  // split on newlines
+  // strip whitespace and comments
+  // remove undefined/nulls
+  // strip all blacklisted parameters
+  // remove template definitions
+  // resolve template uses as per defined in templates
+  const body = objectMap(content, (_, v) => {
+    return v
+        .map(filterStrings(templates, blacklistParameters))
+  })
+  console.log(body)
 
-  // simConfig.templates = [
-  //   ...characterConfiguration[0]
-  //   .split('\n')
-  //   .map(stripWhitespaceAndComments)
-  //   // .filter(isPresent)
-  //   // .map(findTemplates)
-  //   // .filter(isPresent)
-  //   undefined,
-  //   ...simConfig.templates]
-  console.log(simConfig.templates)
-
-  const filtered = characterConfiguration[0]
-    .split('\n')
-    .map(stripWhitespaceAndComments)
-    .filter(isPresent)
-    .filter(filterTemplates)
-    .map(mapTemplates(simConfig.templates))
-    .filter(filterParameters(blacklistParameters))
-  console.log(simConfig)
-  // generate names and combinations for combinations
-  // return [sim] parameters and combinations for future mapping
-
-  return simConfig
+  return body
 }
