@@ -24,5 +24,4 @@ sim_queue.addEventListener('timeout', e => {
   console.log('timeout: ', e)
 })
 
-
 export default sim_queue

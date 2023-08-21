@@ -5,7 +5,8 @@ import {
   FastifyReply
 } from 'fastify'
 
-import Sim from '~/sims/runSim'
+// import Sim from '~/sims/runSim'
+import { SimSet } from '~/sims/SimSet'
 import validator from '~/utils/RequestValidation'
 import sim_queue from '~/sims/SimQueue'
 
@@ -25,9 +26,13 @@ export async function routes(app: FastifyInstance) {
   // pCREATE: ENQUEUE JOB
   app.post('/worker/create', (req: EnqueueSim, res: FastifyReply) => {
     const { body } = req
-    const sim = new Sim(body)
 
-    sim_queue.push(() => sim.runSim())
+    const sim = new SimSet(body)
+    // sim.processSim()
+    // const sim = new Sim(body)
+
+    // sim_queue.push(() => sim.runSim())
+    sim_queue.push( () => sim.processSim() )
 
     res.code(202)
     res.send('OK')

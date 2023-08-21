@@ -69,6 +69,8 @@ export async function querySims(param: Query) {
   const { id } = param
   const { select } = param
 
+  // console.log(id, select)
+
   let idQuery = {}
   let selectQuery = {}
   if (id) {
