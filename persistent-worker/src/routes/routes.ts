@@ -32,7 +32,7 @@ export async function routes(app: FastifyInstance) {
     // const sim = new Sim(body)
 
     // sim_queue.push(() => sim.runSim())
-    sim_queue.push( () => sim.processSim() )
+    sim_queue.push( () => sim.runSims() )
 
     res.code(202)
     res.send('OK')

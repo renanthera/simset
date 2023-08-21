@@ -28,7 +28,7 @@ export class Sim {
     this.stderr = ''
     this.content = ''
 
-    return this.runSim()
+    // return this.runSim()
   }
 
   runSim() {
@@ -56,6 +56,7 @@ export class Sim {
             stderr: stderr,
             status: 'processing'
           }
+          console.error('simc error:', stderr)
           this.submitChunk(body, '/api/worker/processing')
         }
       })
@@ -78,12 +79,14 @@ export class Sim {
             } else {
               body.content = data
               unlink(this.filename, (err: Error) => {
-                if (err) console.error(err)
+                if (err) {
+                  console.error(err)
+                }
                 else console.log('cleaned up ' + this.filename + ' successfully')
               })
+              resolve(body)
             }
           })
-        resolve(body)
       })
     })
   }
