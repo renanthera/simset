@@ -1,5 +1,21 @@
 import { Sim } from '~/sims/Sim'
 
+import {
+  cartesian,
+  nameGenerator,
+  reduceFR,
+  // reduceCombinations,
+  formatStringFR,
+  formatStringF,
+  isPresent,
+  objectMap,
+  splitJSON,
+  // sortMeans,
+  pipe,
+  sortEntries,
+  filterEntries
+} from '~/sims/utils'
+
 type Parameters = {
   apl: Array<Array<string>>
   characterConfiguration: Array<Array<string>>
@@ -60,29 +76,21 @@ export class SimSet {
       // if reducible is missing, run all again
       // if fixed is missing, reduce as per normal (slightly modified splitJSON is required)
       if (body.content) {
-        const values = JSON.parse(body.content).sim.profilesets.results
-        const filter_combination =
-          objectMap(
-            objectMap(
-              values.reduce(splitJSON, {}),
-              (_, v) => {
-                v.entries.sort(sortMeans)
-                return v
-              }),
-            (_, v) => {
-              const idx = v.entries.findIndex(e => e.mean < v.extrema.m_max - 2 * v.extrema.e_max)
-              console.log(v.entries.length, idx)
-              // if more than a quarter, run top quarter
-              // else run top 3 max mean_error's of sims again
-              if (idx > v.entries.length / 4 || idx === -1) {
-                v.entries = v.entries.slice(0, Math.ceil(v.entries.length / 4))
-              }
-              else v.entries = v.entries.slice(0, idx)
-              return v
-            })
+        // pipe(a, [t, u, v]) === v(u(t(a)))
+        const filterCombination =
+          pipe(
+            JSON.parse(body.content)
+              .sim
+              .profilesets
+              .results
+              .reduce(splitJSON, {}),
+            [ objectMap(sortEntries),
+              objectMap(filterEntries)
+            ]
+          )
         // regen fr based on filter_combination
         // run next sim
-        console.log(filter_combination)
+        console.log(filterCombination)
       }
       // console.log(body)
       this.sim.push(body)
@@ -106,69 +114,4 @@ export class SimSet {
 
     return content
   }
-}
-
-const cartesian =
-  (...a) => a.reduce((a, b) => a.flatMap(d => b.map(e => [d, e].flat()))) || [];
-
-const nameGenerator = (t: string) => (e, i) => {
-  return { name: t + i, value: e }
-}
-
-const reduceFR = (t, u) => {
-  return { name: t.name + '-' + u.name, value: [].concat(t.value, u.value) }
-}
-
-const reduceCombinations = (name: string) => (t, u) => {
-  return t + ' ' + name + u
-}
-
-const formatStringFR = ({ name, value }) => {
-  const label = 'profileset.' + name + '+='
-  return { name: name, value: label + value.reduce(reduceCombinations(label)) }
-}
-
-const formatStringF = ({ name, value }) => {
-  const label = 'profileset.' + name + '+='
-  return { name: name, value: label + value }
-}
-
-export const isPresent =
-  <T>(x: T | null | undefined): x is T => x !== null && x !== undefined;
-
-export const objectMap = (obj, fn) => {
-  return Object.fromEntries(
-    Object.entries(obj).map(
-      ([k, v], i) => {
-        return [k, fn(k, v, i)]
-      }
-    )
-  )
-}
-
-const splitJSON = (a, c) => {
-  const f_name = c.name.split('-')[0]
-  if (!a[f_name]) {
-    a[f_name] = {
-      entries: [c],
-      extrema: {
-        e_max: c.mean_error,
-        m_max: c.mean
-      }
-    }
-  }
-  else {
-    a[f_name].entries.push(c)
-    a[f_name].extrema = {
-      e_max: Math.max(a[f_name].extrema.e_max, c.mean_error),
-      m_max: Math.max(a[f_name].extrema.m_max, c.mean)
-    }
-  }
-  return a
-}
-
-const sortMeans = ({ mean: a }, { mean: b }) => {
-  if (a < b) return 1
-  else if (a > b) return -1
-  else return 0
 }
