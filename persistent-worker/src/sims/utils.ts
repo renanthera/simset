@@ -1,5 +1,16 @@
-export const cartesian =
-  (...a) => a.reduce((a, b) => a.flatMap(d => b.map(e => [d, e].flat()))) || [];
+export const cartesian = (...a) => {
+  return a.reduce((a, b) => {
+    return a.flatMap(d => {
+      return b.map(e => {
+        return [d, e].flat()
+      })
+    })
+  }) || []
+}
+
+export const objectCartesian = (...a) => {
+  return cartesian(Object.entries(a))
+}
 
 export const nameGenerator = (t: string) => (e, i) => {
   return { name: t + i, value: e }
@@ -63,6 +74,14 @@ export const objectMap = (fn) => (obj) => {
   )
 }
 
+export const objectMapToArray = (fn) => (obj) => {
+  return Object.entries(obj).map(fn)
+}
+
+export const objectReduce = (fn, init) => (obj) => {
+  return Object.fromEntries(Object.entries(obj).reduce(fn, init))
+}
+
 export const pipe = (operand, fns) => {
   return fns.reduce((a, r) => r(a), operand)
 }
@@ -85,4 +104,34 @@ export const filterEntries = (_, v) => {
     v.entries = v.entries.slice(0, idx)
   }
   return v
+}
+
+export const splitNames = (_, v) => {
+  v.entries = v.entries.map(e => e.name.split('-')[1])
+  return v
+}
+
+export const regroupObjects = (k, v) => {
+  return v.entries.reduce((a, c) => [].concat(a, [[k, c]]), [])
+}
+
+export const valuesToFR = (f_combination, r_combination) => (a, v) => {
+  let name, value
+  if (a.name) {
+    name = a.name + '-' + v
+    value = [].concat(...a.value, { ...f_combination, ...r_combination }[v])
+  }
+  else {
+    name = v
+    value = [{ ...f_combination, ...r_combination }[v]]
+  }
+  return { ...a, name: name, value: value }
+}
+
+const mergeEntries = (a, c) => {
+  return { ...a, [c.name]: c }
+}
+
+export const replaceWithHigherPrecision = (a, c) => {
+  return { ...a, ...JSON.parse(c.content).sim.profilesets.results.reduce(mergeEntries, {}) }
 }

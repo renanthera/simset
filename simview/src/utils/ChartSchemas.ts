@@ -87,6 +87,7 @@ function calculateExtrema(d) {
   if (d) {
     const min = Math.min(...d.map(({y}) => y))
     const max = Math.max(...d.map(({y}) => y))
+    console.log(d)
     return [ min - 0.1 * (max - min), max + 0.1 * (max - min)]
   }
   return [0, 1]

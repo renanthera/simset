@@ -8,13 +8,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Set {
+  id BigInt @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status Status @default(INITIALIZED)
+  parameters String
+  f_combination String?
+  r_combination String?
+  sims Sim[]
+}
+
 model Sim {
-    id BigInt @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    status String
-    parameters String
-    stdout String?
-    stderr String?
-    content String?
+  id BigInt
+  set Set @relation(fields: [setID], references: [id])
+  setID BigInt
+  status Status @default(INITIALIZED)
+  stdout String?
+  stderr String?
+  content String?
+
+  @@id([id, setID])
+}
+
+enum Status {
+  INITIALIZED
+  PROCESSING
+  COMPLETED
+  COMPOSITE
 }

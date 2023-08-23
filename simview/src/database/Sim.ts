@@ -9,21 +9,39 @@ import {
   return this.toString();
 };
 
+type Sim = {
+  id?: number
+  setID?: number
+  status?: string
+  stdout?: string
+  stderr?: string
+  content?: string
+}
+
+type Set = {
+  id?: number
+  createdAt?: string
+  updatedAt?: string
+  status?: string
+  parameters?: string
+  f_combination?: string
+  r_combination?: string
+}
+
 const headers = {
   'authorization': 'asdf',
   'content-type': 'application/json'
 }
 
-export async function createSim(content: FormData) {
+export async function createSet(content: FormData) {
   const parsedParameters = parseSimParameters(content)
-  const sim = await prisma.sim.create({
+  const set = await prisma.set.create({
     data: {
-      status: 'initialized',
       parameters: JSON.stringify(parsedParameters)
     }
   })
   const body = {
-    id: sim.id,
+    id: set.id,
     parameters: parsedParameters
   }
   const fetch_configuration = {
@@ -36,16 +54,16 @@ export async function createSim(content: FormData) {
     fetch_configuration
   )
 
-  return sim
+  return set
 }
 
-export async function updateSim(update_payload) {
-  const { id } = update_payload
-  return await prisma.sim.update({
+export async function updateSet({ set, sim}: { set: Set, sim: Sim }) {
+  const { id } = set
+  return await prisma.set.update({
     where: {
       id: id
     },
-    data: update_payload
+    data: set
   })
 }
 
@@ -94,6 +112,8 @@ export async function querySims(param: Query) {
     if (element.content) {
       element.content = JSON.parse(element.content)
     }
+    if (element.f_combination) element.f_combination = JSON.parse(element.f_combination)
+    if (element.r_combination) element.r_combination = JSON.parse(element.r_combination)
     if (element.parameters) {
       element.parameters = JSON.parse(element.parameters)
     }

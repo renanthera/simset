@@ -18,7 +18,7 @@ function Selector({ updateCallback, initialID }) {
     setSelection(e.target.value)
   }
 
-  useEffect( () => {
+  useEffect(() => {
     if (data) {
       updateCallback(data[0].id)
       setSelection(data[0].id)
@@ -56,7 +56,10 @@ export default function CompositeScatterChartContainer() {
       </>
     )
     if (data) {
-      const sim_data = ExtractChartDataFromJSON(data[0])
+      const sim_data = data[0].content.f1.map(e => {
+        return { ...e, x: Math.random(), y: e.mean }
+      })
+      console.log(sim_data)
       return (
         <>
           <Selector updateCallback={updateSelection} initialID={id} />

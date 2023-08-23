@@ -18,17 +18,18 @@ export class Sim {
     index: number,
     parameters: Array<string>
   ) {
+    const errors = [5, 1, 0.5, 0.1]
+
     this.id = id
     this.index = index
     this.filename = id + '-' + index + '.json'
     this.parameters = parameters
     this.parameters.unshift('json2=' + this.filename)
+    this.parameters.unshift('target_error='+ errors[this.index])
 
     this.stdout = ''
     this.stderr = ''
     this.content = ''
-
-    // return this.runSim()
   }
 
   runSim() {
@@ -42,9 +43,9 @@ export class Sim {
         if (stdout) {
           const body = {
             stdout: stdout,
-            status: 'processing'
+            status: 'PROCESSING'
           }
-          this.submitChunk(body, '/api/worker/processing')
+          this.submitChunk(body, '/api/database/update')
           this.stdout += stdout
         }
       })
@@ -54,10 +55,11 @@ export class Sim {
         if (stderr) {
           const body = {
             stderr: stderr,
-            status: 'processing'
+            status: 'PROCESSING'
           }
           console.error('simc error:', stderr)
-          this.submitChunk(body, '/api/worker/processing')
+          this.submitChunk(body, '/api/database/update')
+          this.stderr += stderr
         }
       })
 

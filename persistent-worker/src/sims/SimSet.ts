@@ -1,19 +1,25 @@
+import { ofetch } from 'ofetch'
+
 import { Sim } from '~/sims/Sim'
 
 import {
   cartesian,
   nameGenerator,
   reduceFR,
-  // reduceCombinations,
   formatStringFR,
   formatStringF,
   isPresent,
   objectMap,
   splitJSON,
-  // sortMeans,
   pipe,
   sortEntries,
-  filterEntries
+  filterEntries,
+  objectMapToArray,
+  splitNames,
+  regroupObjects,
+  valuesToFR,
+  replaceWithHigherPrecision,
+  pipeLog
 } from '~/sims/utils'
 
 type Parameters = {
@@ -45,7 +51,7 @@ export class SimSet {
     this.sim = []
     this.result = []
     this.fr_combination = []
-    this.count = count ? count : 1
+    this.count = count ? count : 4
 
     this.f_combination =
       cartesian(...this.parameters.fixedCombination)
@@ -64,7 +70,17 @@ export class SimSet {
         [...this.f_combination, ...this.r_combination]
           .map(formatStringF)
     }
-    // console.log(this.fr_combination)
+
+    this.f_combination =
+      this.f_combination
+        .reduce((a, c) => {
+          return { ...a, [c.name]: c.value }
+        }, {})
+    this.r_combination =
+      this.r_combination
+        .reduce((a, c) => {
+          return { ...a, [c.name]: c.value }
+        }, {})
   }
 
   async runSims() {
@@ -76,25 +92,66 @@ export class SimSet {
       // if reducible is missing, run all again
       // if fixed is missing, reduce as per normal (slightly modified splitJSON is required)
       if (body.content) {
+        this.sim.push(body)
+        // console.log(this.fr_combination)
         // pipe(a, [t, u, v]) === v(u(t(a)))
-        const filterCombination =
+        // from previously run sim:
+        //   gather profileset results
+        //   convert it into { f_name: { entries: [r_name_full] } }
+        //   remove entries that are:
+        //     not in top quarter OR
+        //     more than 2 maximum errors below max mean
+        //   transform to { f_name: { entries: [...r_names] } }
+        //   transform to [ [f_name, r_name], ...]
+        //   populate with combination information
+        //   transform to fr_combination shape
+        this.fr_combination =
           pipe(
             JSON.parse(body.content)
               .sim
               .profilesets
               .results
               .reduce(splitJSON, {}),
-            [ objectMap(sortEntries),
-              objectMap(filterEntries)
+            [
+              objectMap(sortEntries),
+              objectMap(filterEntries),
+              objectMap(splitNames),
+              objectMap(regroupObjects),
+              objectMapToArray(v => v[1])
             ]
-          )
-        // regen fr based on filter_combination
-        // run next sim
-        console.log(filterCombination)
+          ).flat(1)
+            .map(u => u.reduce(valuesToFR(this.f_combination, this.r_combination), {}))
+            .map(formatStringFR)
       }
-      // console.log(body)
-      this.sim.push(body)
     }
+    const payload =
+      pipe(
+        this.sim
+          .reduce(replaceWithHigherPrecision, {}),
+        [
+          Object.values
+        ])
+        .reduce((a, c) => {
+          const name = c.name.split('-')
+          const f_name = name[0]
+          const r_name = name[1]
+          a[f_name] = [].concat(a[f_name], [{...c, combination: [].concat(this.f_combination[f_name], this.r_combination[r_name])}]).filter(isPresent)
+          // console.log(a[f_name])
+          return a
+        }, {})
+    console.log(payload)
+    const body = {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: {
+        id: this.id,
+        status: 'success',
+        f_combination: JSON.stringify(this.f_combination),
+        r_combination: JSON.stringify(this.r_combination),
+        content: JSON.stringify(payload)
+      }
+    }
+    ofetch('http://localhost:3000/api/database/update', body)
 
     return this.id
   }
@@ -105,7 +162,7 @@ export class SimSet {
       ...this.parameters.apl,
       ...this.fr_combination.map(({ value }) => value)
     ].flat(Infinity)
-    content.unshift('target_error=5')
+    // content.unshift('target_error=5')
     content.unshift('threads=48')
     content.unshift('profileset_work_threads=1')
     content.unshift('single_actor_batch=1')
