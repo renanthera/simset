@@ -12,8 +12,7 @@ sim_queue.addEventListener('start', () => {
 })
 
 sim_queue.addEventListener('success', e => {
-  const { id } = e.detail.result[0]
-  console.log('finished job: ', id)
+  console.log('finished job: ', e)
 })
 
 sim_queue.addEventListener('end', () => {

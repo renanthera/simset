@@ -28,10 +28,7 @@ export async function routes(app: FastifyInstance) {
     const { body } = req
 
     const sim = new SimSet(body)
-    // sim.processSim()
-    // const sim = new Sim(body)
 
-    // sim_queue.push(() => sim.runSim())
     sim_queue.push( () => sim.runSims() )
 
     res.code(202)

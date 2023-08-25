@@ -3,6 +3,7 @@ import { spawn } from 'child_process'
 import { readFile, unlink } from 'node:fs'
 
 const url_base = 'http://localhost:3000'
+const DBG = false
 
 export class Sim {
   id: number
@@ -16,7 +17,8 @@ export class Sim {
   constructor(
     id: number,
     index: number,
-    parameters: Array<string>
+    parameters: Array<string>,
+    error_id: number
   ) {
     const errors = [5, 1, 0.5, 0.1]
 
@@ -25,7 +27,7 @@ export class Sim {
     this.filename = id + '-' + index + '.json'
     this.parameters = parameters
     this.parameters.unshift('json2=' + this.filename)
-    this.parameters.unshift('target_error='+ errors[this.index])
+    this.parameters.unshift('target_error=' + errors[error_id])
 
     this.stdout = ''
     this.stderr = ''
@@ -45,7 +47,8 @@ export class Sim {
             stdout: stdout,
             status: 'PROCESSING'
           }
-          this.submitChunk(body, '/api/database/update')
+          if (DBG) console.log('simc stdout:', stdout)
+          this.submitChunk(body, '/api/database/update/sim')
           this.stdout += stdout
         }
       })
@@ -57,14 +60,15 @@ export class Sim {
             stderr: stderr,
             status: 'PROCESSING'
           }
-          console.error('simc error:', stderr)
-          this.submitChunk(body, '/api/database/update')
+          if (DBG) console.error('simc stderr:', stderr)
+          this.submitChunk(body, '/api/database/update/sim')
           this.stderr += stderr
         }
       })
 
       process.on('close', (...args) => {
         console.log('finishing: ' + this.id + '-' + this.index + ' with ', args)
+        this.submitChunk({ status: 'COMPLETED' }, '/api/database/update/sim')
         const body = {
           id: this.id,
           index: this.index,
@@ -101,7 +105,7 @@ export class Sim {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: {
-          id: this.id,
+          id: this.index,
           ...content
         }
       }

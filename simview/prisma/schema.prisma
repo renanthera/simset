@@ -20,15 +20,30 @@ model Set {
 }
 
 model Sim {
-  id BigInt
+  id BigInt @id @default(autoincrement())
   set Set @relation(fields: [setID], references: [id])
   setID BigInt
   status Status @default(INITIALIZED)
   stdout String?
   stderr String?
-  content String?
+  results Result[]
+}
 
-  @@id([id, setID])
+model Result {
+  id BigInt @id @default(autoincrement())
+  sim Sim @relation(fields: [simID], references: [id])
+  simID BigInt
+  name String
+  mean Float
+  min Float
+  max Float
+  stddev Float
+  mean_stddev Float
+  mean_error Float
+  median Float
+  first_quartile Float
+  third_quartile Float
+  iterations Int
 }
 
 enum Status {

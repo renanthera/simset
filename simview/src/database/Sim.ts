@@ -1,3 +1,4 @@
+import { Prisma } from '~/../generated/client'
 import prisma from '~/database/Database'
 
 import {
@@ -6,26 +7,12 @@ import {
 } from '~/utils/CreateSim'
 
 (BigInt.prototype as any).toJSON = function () {
-  return this.toString();
-};
-
-type Sim = {
-  id?: number
-  setID?: number
-  status?: string
-  stdout?: string
-  stderr?: string
-  content?: string
+  return this.toString()
 }
 
-type Set = {
-  id?: number
-  createdAt?: string
-  updatedAt?: string
-  status?: string
-  parameters?: string
-  f_combination?: string
-  r_combination?: string
+export type Query = {
+  id: string
+  select: string
 }
 
 const headers = {
@@ -33,79 +20,132 @@ const headers = {
   'content-type': 'application/json'
 }
 
-export async function createSet(content: FormData) {
-  const parsedParameters = parseSimParameters(content)
+export async function createSet(formContent: FormData) {
+  const parsedParameters = parseSimParameters(formContent)
   const set = await prisma.set.create({
     data: {
       parameters: JSON.stringify(parsedParameters)
     }
   })
   const body = {
-    id: set.id,
-    parameters: parsedParameters
-  }
-  const fetch_configuration = {
     method: 'POST',
-    body: JSON.stringify(body),
-    headers: headers
+    headers: headers,
+    body: JSON.stringify({
+      id: set.id,
+      parameters: parsedParameters
+    })
   }
-  const send_to_worker = await fetch(
-    'http://localhost:3001/worker/create',
-    fetch_configuration
-  )
-
-  return set
+  return await fetch('http://localhost:3001/worker/create', body)
 }
 
-export async function updateSet({ set, sim}: { set: Set, sim: Sim }) {
-  const { id } = set
+export async function createSim({ setID: id, count } : { setID: number, count: number }) {
+  const setExists = await prisma.set.findUnique({
+    where: {
+      id: id
+    }
+  })
+  // send just the simID back to requester if set exists
+  // else return null
+  if (setExists) {
+    await prisma.sim.createMany({
+      data: Array(count).fill({setID: id}),
+      skipDuplicates: true
+    })
+    const sim = await prisma.sim.findMany({
+      orderBy: [
+        {
+          id: 'desc'
+        }
+      ],
+      take: count,
+      where: {
+        setID: id
+      },
+      select: {
+        id: true
+      }
+    })
+    return sim.map( e => e.id ).reverse()
+  } else {
+    return null
+  }
+}
+
+export async function createResult(result: Array<Prisma.ResultCreateManyInput>) {
+  const simExists = await prisma.sim.findUnique({
+    where: {
+      id: result[0].simID
+    }
+  })
+  if (simExists) {
+    return await prisma.result.createMany({
+      data: result,
+      skipDuplicates: true
+    })
+  } else {
+    return null
+  }
+}
+
+export async function updateSet(update: Prisma.SetUpdateInput) {
+  const { id } : { id: number } = update
   return await prisma.set.update({
     where: {
       id: id
     },
-    data: set
+    data: update
   })
 }
 
-type Select = {
-  id: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  status?: boolean
-  parameters?: boolean
-  stdout?: boolean
-  stderr?: boolean
-  content?: boolean
+export async function updateSim(update: Prisma.SimUpdateInput) {
+  const { id } : { id: number } = update
+  return await prisma.sim.update({
+    where: {
+      id: id
+    },
+    data: update
+  })
 }
 
-export type Query = {
-  id: Array<string>
-  select: Array<string>
+export async function updateResult() {
+  return
 }
 
-export async function querySims(param: Query) {
-  const { id } = param
-  const { select } = param
-
-  // console.log(id, select)
-
-  let idQuery = {}
-  let selectQuery = {}
-  if (id) {
-    if (id !== 'all') {
-      idQuery = { where: { id: { in: id.split(',') } } }
-    }
-  }
-  if (select) {
-    if (select !== 'all') {
-      selectQuery = {select: select.split(',').map(v => { return { [v]: true } }).reduce( (k, v) => Object.assign(k,v)) }
-    }
-  }
+// TODO: Rethink this abomination to make it a bit more ergonomic.
+export async function query(param: Query) {
+  const { id, select } = param
   const query = {
-    ...idQuery,
-    ...selectQuery
+    ...(
+      id && id !== 'all' ?
+        {
+          where: {
+            id: {
+              in: id.split(',')
+            }
+          }
+        }
+        : {}
+    ),
+    // ...(
+    //   select && select !== 'all' ?
+    //     {
+    //       select:
+    //         select.split(',')
+    //           .map(v => ({ [v]: true }))
+    //           .reduce((k, v) => Object.assign(k, v))
+    //     }
+    //     : {}
+    // ),
+    include: {
+      sims: {
+        include: {
+          results: true
+        }
+      }
+    }
   }
-  const body = await prisma.sim.findMany(query)
+  console.log(query)
+  const body = await prisma.set.findMany(query)
 
   // reparse content and parameters as JSON
   for (var element of body) {

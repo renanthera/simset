@@ -56,7 +56,6 @@ export function parseSimParameters(content: FormData) {
     return v
         .map(filterStrings(templates, blacklistParameters))
   })
-  console.log(body)
 
   return body
 }

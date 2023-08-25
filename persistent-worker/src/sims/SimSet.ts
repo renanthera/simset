@@ -31,12 +31,14 @@ type Parameters = {
 
 type Body = {
   id: number,
-  parameters: Parameters
+  parameters: Parameters,
+  count?: number
 }
 
 export class SimSet {
-  id: number
+  setID: number
   count?: number
+  simIDs: Promise<Array<number>>
   sim: Array<Sim>
   result: Array<JSON>
   parameters: Parameters
@@ -45,13 +47,24 @@ export class SimSet {
   r_combination
   fr_combination
 
-  constructor(body: Body, count?: number) {
-    this.id = body.id
+  constructor(body: Body) {
+    this.count = body.count ? body.count : 4
+    this.setID = body.id
+    this.simIDs = ofetch(
+      'http://localhost:3000/api/database/create/sim',
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: {
+          setID: this.setID,
+          count: this.count
+        }
+      }
+    )
     this.parameters = body.parameters
     this.sim = []
     this.result = []
     this.fr_combination = []
-    this.count = count ? count : 4
 
     this.f_combination =
       cartesian(...this.parameters.fixedCombination)
@@ -84,13 +97,27 @@ export class SimSet {
   }
 
   async runSims() {
+    ofetch(
+      'http://localhost:3000/api/database/update/set',
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: {
+          status: 'PROCESSING',
+          f_combination: JSON.stringify(this.f_combination),
+          r_combination: JSON.stringify(this.r_combination),
+          id: this.setID
+        }
+      }
+    )
+    this.simIDs = await this.simIDs
     for (var index = 0; index < this.count; index++) {
       const parameters = this.produceParameters()
-      const sim = new Sim(this.id, index, parameters)
+      const sim = new Sim(this.setID, this.simIDs[index], parameters, index)
       const body = await sim.runSim()
-      // doesnt work if either fixed or reducible combinations are missing
-      // if reducible is missing, run all again
-      // if fixed is missing, reduce as per normal (slightly modified splitJSON is required)
+      // doesnt work if either fixed or reducible combinations are null
+      // if reducible is null, run all again
+      // if fixed is null, reduce as per normal (slightly modified splitJSON is required)
       if (body.content) {
         this.sim.push(body)
         // console.log(this.fr_combination)
@@ -105,6 +132,12 @@ export class SimSet {
         //   transform to [ [f_name, r_name], ...]
         //   populate with combination information
         //   transform to fr_combination shape
+        const content = {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.parse(body.content).sim.profilesets.results.map(e => ({ ...e, simID: this.simIDs[index] }))
+        }
+        await ofetch('http://localhost:3000/api/database/create/result', content)
         this.fr_combination =
           pipe(
             JSON.parse(body.content)
@@ -124,34 +157,42 @@ export class SimSet {
             .map(formatStringFR)
       }
     }
-    const payload =
-      pipe(
-        this.sim
-          .reduce(replaceWithHigherPrecision, {}),
-        [
-          Object.values
-        ])
-        .reduce((a, c) => {
-          const name = c.name.split('-')
-          const f_name = name[0]
-          const r_name = name[1]
-          a[f_name] = [].concat(a[f_name], [{...c, combination: [].concat(this.f_combination[f_name], this.r_combination[r_name])}]).filter(isPresent)
-          // console.log(a[f_name])
-          return a
-        }, {})
-    console.log(payload)
-    const body = {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: {
-        id: this.id,
-        status: 'success',
-        f_combination: JSON.stringify(this.f_combination),
-        r_combination: JSON.stringify(this.r_combination),
-        content: JSON.stringify(payload)
+    await ofetch(
+      'http://localhost:3000/api/database/update/set',
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: { status: 'COMPLETED', id: this.setID }
       }
-    }
-    ofetch('http://localhost:3000/api/database/update', body)
+    )
+    // const payload =
+    //   pipe(
+    //     this.sim
+    //       .reduce(replaceWithHigherPrecision, {}),
+    //     [
+    //       Object.values
+    //     ])
+    //     .reduce((a, c) => {
+    //       const name = c.name.split('-')
+    //       const f_name = name[0]
+    //       const r_name = name[1]
+    //       a[f_name] = [].concat(a[f_name], [{...c, combination: [].concat(this.f_combination[f_name], this.r_combination[r_name])}]).filter(isPresent)
+    //       // console.log(a[f_name])
+    //       return a
+    //     }, {})
+    // console.log(payload)
+    // const body = {
+    //   method: 'POST',
+    //   headers: { 'content-type': 'application/json' },
+    //   body: {
+    //     id: this.id,
+    //     status: 'success',
+    //     f_combination: JSON.stringify(this.f_combination),
+    //     r_combination: JSON.stringify(this.r_combination),
+    //     content: JSON.stringify(payload)
+    //   }
+    // }
+    // ofetch('http://localhost:3000/api/database/update', body)
 
     return this.id
   }
