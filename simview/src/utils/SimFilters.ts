@@ -74,3 +74,21 @@ export const objectMap = (obj, fn) => {
     )
   )
 }
+
+export const objectMapPipe = (fn) => (obj) => {
+  return Object.fromEntries(
+    Object.entries(obj).map(
+      ([k, v], i) => {
+        return [k, fn(k, v, i)]
+      }
+    )
+  )
+}
+
+export const objectMapToArray = (fn) => (obj) => {
+  return Object.entries(obj).map(fn)
+}
+
+export const pipe = (operand, fns) => {
+  return fns.reduce((a, r) => r(a), operand)
+}

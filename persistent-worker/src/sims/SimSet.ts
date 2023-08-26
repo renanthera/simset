@@ -120,6 +120,12 @@ export class SimSet {
       // if fixed is null, reduce as per normal (slightly modified splitJSON is required)
       if (body.content) {
         this.sim.push(body)
+        const content = {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.parse(body.content).sim.profilesets.results.map(e => ({ ...e, simID: this.simIDs[index] }))
+        }
+        await ofetch('http://localhost:3000/api/database/create/result', content)
         // console.log(this.fr_combination)
         // pipe(a, [t, u, v]) === v(u(t(a)))
         // from previously run sim:
@@ -132,12 +138,6 @@ export class SimSet {
         //   transform to [ [f_name, r_name], ...]
         //   populate with combination information
         //   transform to fr_combination shape
-        const content = {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.parse(body.content).sim.profilesets.results.map(e => ({ ...e, simID: this.simIDs[index] }))
-        }
-        await ofetch('http://localhost:3000/api/database/create/result', content)
         this.fr_combination =
           pipe(
             JSON.parse(body.content)

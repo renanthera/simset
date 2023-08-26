@@ -113,50 +113,5 @@ export async function updateResult() {
 
 // TODO: Rethink this abomination to make it a bit more ergonomic.
 export async function query(param: Query) {
-  const { id, select } = param
-  const query = {
-    ...(
-      id && id !== 'all' ?
-        {
-          where: {
-            id: {
-              in: id.split(',')
-            }
-          }
-        }
-        : {}
-    ),
-    // ...(
-    //   select && select !== 'all' ?
-    //     {
-    //       select:
-    //         select.split(',')
-    //           .map(v => ({ [v]: true }))
-    //           .reduce((k, v) => Object.assign(k, v))
-    //     }
-    //     : {}
-    // ),
-    include: {
-      sims: {
-        include: {
-          results: true
-        }
-      }
-    }
-  }
-  console.log(query)
-  const body = await prisma.set.findMany(query)
-
-  // reparse content and parameters as JSON
-  for (var element of body) {
-    if (element.content) {
-      element.content = JSON.parse(element.content)
-    }
-    if (element.f_combination) element.f_combination = JSON.parse(element.f_combination)
-    if (element.r_combination) element.r_combination = JSON.parse(element.r_combination)
-    if (element.parameters) {
-      element.parameters = JSON.parse(element.parameters)
-    }
-  }
-  return body
+  return await prisma.set.findMany(param)
 }

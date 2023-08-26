@@ -1,12 +1,16 @@
 import {
-  query,
   createSet,
   createSim,
   createResult,
   updateSet,
   updateSim,
-  updateResult
+  query
 } from '~/database/Sim'
+
+import {
+  objectMap,
+  pipe
+} from '~/utils/SimFilters'
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
@@ -18,24 +22,24 @@ const opts = {
   }
 }
 
-export async function GET(
-  req: Request,
-  { params : { method } }: { params: { method: Array<string> } }
-) {
-  const { searchParams } = new URL(req.url)
-  const event = method[0]
+// export async function GET(
+//   req: Request,
+//   { params : { method } }: { params: { method: Array<string> } }
+// ) {
+//   const { searchParams } = new URL(req.url)
+//   const event = method[0]
 
-  switch (event) {
-    case 'query':
-      const q = {
-        id: searchParams.get('id'),
-        select: searchParams.get('select')
-      }
-      const body = await query(q)
-      return new Response(JSON.stringify(body), opts)
-  }
-  return new Response('No such API endpoint', { status: 404 })
-}
+//   switch (event) {
+//     case 'query':
+//       const q = {
+//         id: searchParams.get('id'),
+//         select: searchParams.get('select')
+//       }
+//       const body = await query(q)
+//       return new Response(JSON.stringify(body), opts)
+//   }
+//   return new Response('No such API endpoint', { status: 404 })
+// }
 
 export async function POST(
   req: Request,
@@ -88,6 +92,23 @@ export async function POST(
           return new Response('UNIMPLEMENTED, SORRY FOR BAD CODE')
       }
       break
+    case 'query':
+      const u = pipe(
+        (await query(data))
+          .map(e => {
+            return objectMap(e, (k, v) => {
+              try {
+                return JSON.parse(v)
+              } catch (e) {
+                return v
+              }
+            })
+          }),
+        [
+          JSON.stringify
+        ]
+      )
+      return new Response(u, opts)
   }
   return new Response('No such API endpoint', { status: 404 })
 }
