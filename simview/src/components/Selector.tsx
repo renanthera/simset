@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
 // Array<Array<string>> items => n array of [id, disp] (id, display text)
 // callback => triggers on update to selection

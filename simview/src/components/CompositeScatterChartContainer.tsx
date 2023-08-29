@@ -23,7 +23,12 @@ function SetSelector({ callback, state }) {
           return 0
         })
         .map(e => [e.id, e.id + ' ' + e.status])
-    return (<Selector callback={callback} items={processedData} state={state} />)
+    return (
+      <div>
+        <div>Set Selection</div>
+        <Selector callback={callback} items={processedData} state={state} />
+      </div>
+    )
   }
 }
 
@@ -40,7 +45,12 @@ function SimSelector({ callback, set, state }) {
           return 0
         })
         .map(e => [e.id, e.id + ' ' + e.status])
-    return (<Selector callback={callback} items={processedData} state={state} />)
+    return (
+      <div>
+        <div>Sim Selection</div>
+        <Selector callback={callback} items={processedData} state={state} />
+      </div>
+    )
   }
 }
 
@@ -58,7 +68,12 @@ function FSelector({ callback, set, state }) {
           })
         ]
       )
-    return (<Selector callback={callback} items={processedData} state={state} />)
+    return (
+      <div>
+        <div>F-Combination Selection</div>
+        <Selector callback={callback} items={processedData} state={state} />
+      </div>
+    )
   }
 }
 
@@ -89,7 +104,13 @@ function CSC({ set, sim, f }) {
         .sims[0]
         .results
         .filter(e => e.name.split('-')[0] === 'f' + f[0])
-        .map(e => ({ ...e, x: Math.random(), y: e.mean }))
+        .map(e => ({
+          ...e,
+          x: Math.random(),
+          y: e.mean,
+          f_combination: data[0].f_combination[e.name.split('-')[0]],
+          r_combination: data[0].r_combination[e.name.split('-')[1]]
+        }))
     return (<CompositeScatterChart data={simData} />)
   }
 }
@@ -108,10 +129,7 @@ export default function CompositeScatterChartContainer() {
 
   return (
     <>
-      <div className="grid grid-cols-3 m-3 space-x-3 content-center w-1/3">
-        <p>Set Selection</p>
-        <p>Sim Selection</p>
-        <p>F-Combination Selection</p>
+      <div className="flex flex-row w-1/3 justify-between">
         <SetSelector callback={setSelectCallback} state={set} />
         <SimSelector callback={simSelectCallback} set={set} state={sim} />
         <FSelector callback={fSelectCallback} set={set} state={f} />

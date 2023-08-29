@@ -13,10 +13,12 @@ export const metadata: Metadata = {
 const root_css = [
   'bg-woodsmoke-950',
   'text-woodsmoke-100',
-  'mt-0',
-  'mb-4',
-  'ml-4',
-  'mr-4'
+  'flex',
+  'flex-col',
+  'w-full',
+  'min-h-screen',
+  'max-h-screen',
+  'h-screen'
 ]
 
 export default function RootLayout({
@@ -29,7 +31,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className={root_css.join(' ')}>
           <NavBar/>
-          <div>{children}</div>
+          <div className="flex-1 ml-4 mr-4">{children}</div>
         </div>
       </body>
     </html>
