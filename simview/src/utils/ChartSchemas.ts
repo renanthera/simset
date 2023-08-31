@@ -3,15 +3,15 @@ import tailwindConfig from '~/../tailwind.config.js'
 
 const colors = resolveConfig(tailwindConfig).theme.colors
 
-export function all_sims(data, dims) {
+export function all_sims(data) {
   return {
-    ...scatter_base({ "key": "All Sims", "data": data, ...dims })
+    ...scatter_base({ "key": "All Sims", "data": data })
   }
 }
 
-export function selected_sims(data, dims) {
+export function selected_sims(data) {
   let schema = {
-    ...scatter_base({ "key": "Selected Sims", "data": data, ...dims }),
+    ...scatter_base({ "key": "Selected Sims", "data": data }),
   }
 
   schema.encoding.size = {
@@ -36,9 +36,9 @@ export function selected_sims(data, dims) {
   return schema
 }
 
-export function scatter_base({ key, data, height, width }) {
+export function scatter_base({ key, data }) {
   return {
-    ...theming(height, width),
+    ...theming(),
     ...base(),
     "title": {
       "text": key
@@ -92,7 +92,7 @@ function calculateExtrema(d) {
   return [0, 1]
 }
 
-function theming(height: number, width: number) {
+function theming() {
   return {
     "autosize": {
       "type": "fit",
@@ -100,34 +100,8 @@ function theming(height: number, width: number) {
       "contains": "padding"
     },
     "padding": 1,
-    // "width": width-40,
-    // "height": height - 160,
-    // "width": 200,
-    // "height": 200,
     "width": "container",
     "height": "container",
-    // "signals": [
-    //   {
-    //     "name": "width",
-    //     "init": "isFinite(containerSize()[0]) ? containerSize()[0] : 500",
-    //     "on": [
-    //       {
-    //         "update": "isFinite(containerSize()[0]) ? containerSize()[0] : 500",
-    //         "events": "window:resize"
-    //       }
-    //     ]
-    //   },
-    //   {
-    //     "name": "height",
-    //     "init": "isFinite(containerSize()[1]) ? containerSize()[1] : 500",
-    //     "on": [
-    //       {
-    //         "update": "isFinite(containerSize()[1]) ? containerSize()[1] : 500",
-    //         "events": "window:resize"
-    //       }
-    //     ]
-    //   }
-    // ],
     "config": {
       "background": colors.transparent,
       "title": {
