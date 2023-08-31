@@ -32,6 +32,7 @@ export default function RootLayout({
         <div className={root_css.join(' ')}>
           <NavBar/>
           <div className="flex-1 ml-4 mr-4">{children}</div>
+          <div className="flex ml-4 mr-4">THIS IS A FOOTER</div>
         </div>
       </body>
     </html>

@@ -3,7 +3,7 @@ export function PrettyPrintJSON({ data }) {
     if (data.length > 0) {
       return (
         <>
-          <div>
+          <div className="min-h-0 max-h-[90%] overflow-auto">
             <div>
               {data.length} sim{data.length > 1 ? 's' : ''} selected.
             </div>

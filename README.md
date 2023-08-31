@@ -13,7 +13,7 @@ usage for dev:
 ```
 $ <init corepack>
 $ corepack yarn install
-$ corepack yarn pnpify prisma db push
+$ corepack yarn pnpify prisma db push                 # if db is not initialized
 $ corepack yarn dev
 ```
 

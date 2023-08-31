@@ -24,7 +24,7 @@ function SetSelector({ callback, state }) {
         })
         .map(e => [e.id, e.id + ' ' + e.status])
     return (
-      <div>
+      <div className="flex flex-col">
         <div>Set Selection</div>
         <Selector callback={callback} items={processedData} state={state} />
       </div>
@@ -46,7 +46,7 @@ function SimSelector({ callback, set, state }) {
         })
         .map(e => [e.id, e.id + ' ' + e.status])
     return (
-      <div>
+      <div className="flex flex-col">
         <div>Sim Selection</div>
         <Selector callback={callback} items={processedData} state={state} />
       </div>
@@ -69,7 +69,7 @@ function FSelector({ callback, set, state }) {
         ]
       )
     return (
-      <div>
+      <div className="flex flex-col">
         <div>F-Combination Selection</div>
         <Selector callback={callback} items={processedData} state={state} />
       </div>
@@ -116,9 +116,9 @@ function CSC({ set, sim, f }) {
 }
 
 export default function CompositeScatterChartContainer() {
-  const [set, setSet] = useState(null)
-  const [sim, setSim] = useState(null)
-  const [f, setF] = useState(null)
+  const [set, setSet] = useState([1, "1 COMPLETED"])
+  const [sim, setSim] = useState(["1", "1 COMPLETED"])
+  const [f, setF] = useState([0, "f0 desired_targets=1"])
   const setSelectCallback = (e) => {
     setSet(e)
     setSim(null)
@@ -126,10 +126,11 @@ export default function CompositeScatterChartContainer() {
   }
   const simSelectCallback = (e) => setSim(e)
   const fSelectCallback = (e) => setF(e)
+  console.log(set, sim, f)
 
   return (
     <>
-      <div className="flex flex-row w-1/3 justify-between">
+      <div className="flex flex-row w-1/3 justify-between mb-4">
         <SetSelector callback={setSelectCallback} state={set} />
         <SimSelector callback={simSelectCallback} set={set} state={sim} />
         <FSelector callback={fSelectCallback} set={set} state={f} />

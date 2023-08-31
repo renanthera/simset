@@ -3,15 +3,15 @@ import tailwindConfig from '~/../tailwind.config.js'
 
 const colors = resolveConfig(tailwindConfig).theme.colors
 
-export function all_sims(data) {
+export function all_sims(data, dims) {
   return {
-    ...scatter_base({ "key": "All Sims", "data": data })
+    ...scatter_base({ "key": "All Sims", "data": data, ...dims })
   }
 }
 
-export function selected_sims(data) {
+export function selected_sims(data, dims) {
   let schema = {
-    ...scatter_base({ "key": "Selected Sims", "data": data }),
+    ...scatter_base({ "key": "Selected Sims", "data": data, ...dims }),
   }
 
   schema.encoding.size = {
@@ -36,9 +36,9 @@ export function selected_sims(data) {
   return schema
 }
 
-export function scatter_base({ key, data }) {
+export function scatter_base({ key, data, height, width }) {
   return {
-    ...theming(),
+    ...theming(height, width),
     ...base(),
     "title": {
       "text": key
@@ -92,8 +92,18 @@ function calculateExtrema(d) {
   return [0, 1]
 }
 
-function theming() {
+function theming(height: number, width: number) {
   return {
+    "autosize": {
+      "type": "fit",
+      "resize": "true",
+      "contains": "padding"
+    },
+    "padding": 1,
+    // "width": width-40,
+    // "height": height - 160,
+    // "width": 200,
+    // "height": 200,
     "width": "container",
     "height": "container",
     // "signals": [
