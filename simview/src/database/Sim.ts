@@ -113,6 +113,6 @@ export async function updateResult() {
 
 // TODO: Rethink this abomination to make it a bit more ergonomic.
 export async function query(param: Query) {
-  console.log(JSON.stringify(param, null, 2))
+  // console.log(JSON.stringify(param, null, 2))
   return await prisma.set.findMany(param)
 }

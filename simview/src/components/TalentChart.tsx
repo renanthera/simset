@@ -1,5 +1,8 @@
+import {
+  useCanvas
+} from '~/components/Canvas'
+
 export const MapTalentChart = (limit: number) => ({ combinations }) => {
-  console.log(combinations)
   if (!combinations) return
   return (
     <div className="grid grid-cols-[repeat(auto-fill,_300px)] gap-4">
@@ -9,7 +12,7 @@ export const MapTalentChart = (limit: number) => ({ combinations }) => {
             <>
               <div>
                 {e.name}
-                <TalentChart key={i} combination={e} />
+                <TalentChart key={e.name} combination={e} />
               </div>
             </>
           )
@@ -25,8 +28,18 @@ function TalentChart({ combination }) {
     'https://www.raidbots.com/simbot/render/talents/'
     + talent_string
     + '?width=300&mini=1&level=60&bgcolor=330000'
-  console.log(url)
   return (
     <iframe className="h-[200px] overflow-y-hidden" src={url} />
+  )
+}
+
+const draw_tree = (context) => {
+}
+
+export function TalentTree({ oh_god_oh_fuck }) {
+  const canvas = useCanvas(draw_tree)
+
+  return (
+    <canvas ref={canvas}/>
   )
 }

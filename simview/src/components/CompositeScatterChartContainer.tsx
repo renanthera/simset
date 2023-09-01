@@ -11,6 +11,11 @@ import CompositeScatterChart from '~/components/CompositeScatterChart'
 import { Selector } from '~/components/Selector'
 import { fetcher } from '~/utils/FetchData'
 
+import {
+  HamburgerMenu,
+  HamburgerChild
+} from '~/components/HamburgerFilter'
+
 function SetSelector({ callback, state }) {
   const { data, error } = useSWR(['/api/database/query', { select: { id: true, status: true } }], fetcher)
   if (error) return (<div>Failed to load</div>)
@@ -126,14 +131,22 @@ export default function CompositeScatterChartContainer() {
   }
   const simSelectCallback = (e) => setSim(e)
   const fSelectCallback = (e) => setF(e)
-  console.log(set, sim, f)
 
   return (
     <>
-      <div className="flex flex-row w-1/3 justify-between mb-4">
-        <SetSelector callback={setSelectCallback} state={set} />
-        <SimSelector callback={simSelectCallback} set={set} state={sim} />
-        <FSelector callback={fSelectCallback} set={set} state={f} />
+      <div className="flex flex-row w-full justify-between mb-4">
+        <div className="flex flex-row w-1/3 justify-between">
+          <SetSelector callback={setSelectCallback} state={set} />
+          <SimSelector callback={simSelectCallback} set={set} state={sim} />
+          <FSelector callback={fSelectCallback} set={set} state={f} />
+        </div>
+        <div>
+          <HamburgerMenu>
+            <HamburgerChild label="01">01</HamburgerChild>
+            <HamburgerChild label="02">02</HamburgerChild>
+            <HamburgerChild label="03">03</HamburgerChild>
+          </HamburgerMenu>
+        </div>
       </div>
       <CSC set={set} sim={sim} f={f} />
     </>

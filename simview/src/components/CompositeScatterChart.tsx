@@ -21,7 +21,10 @@ export default function CompositeScatterChart({ data }) {
       if (brush_bounds.y) {
         const min = brush_bounds.y[0]
         const max = brush_bounds.y[1]
-        set_all_sims_state(data.filter(filter(min, max)))
+        set_all_sims_state(
+          data
+            .filter(filter(min, max))
+        )
         set_selected_sims_state(null)
         return
       }
@@ -35,7 +38,15 @@ export default function CompositeScatterChart({ data }) {
       if (brush_bounds.y) {
         const min = brush_bounds.y[0]
         const max = brush_bounds.y[1]
-        set_selected_sims_state(data.filter(filter(min, max)))
+        set_selected_sims_state(
+          data
+            .filter(filter(min, max))
+            .sort(({ y: a }, { y: b }) => {
+              if (a < b) return 1
+              if (a > b) return -1
+              return 0
+            })
+        )
         return
       }
       set_selected_sims_state(null)
@@ -60,7 +71,7 @@ export default function CompositeScatterChart({ data }) {
         <VegaLite className="h-1/2" spec={selected_sims(all_sims_state)} data={{ 'data': all_sims_state }} signalListeners={signalListenersSelectedSims} actions={actions} />
       </div>
       <div className={"min-h-0 min-w-0 overflow-auto " + height}>
-        <TalentChart combinations={selected_sims_state}/>
+        <TalentChart combinations={selected_sims_state} />
         <PrettyPrintJSON data={selected_sims_state ? selected_sims_state : all_sims_state} />
       </div>
     </div>
