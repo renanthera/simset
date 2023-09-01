@@ -51,7 +51,7 @@ export default function CompositeScatterChart({ data }) {
   // Hide the 'Actions' button at top right of charts, easy to turn off.
   const actions = false
 
-  const TalentChart = MapTalentChart(10)
+  const TalentChart = MapTalentChart(12)
 
   return (
     <div className="grid grid-cols-[minmax(0,_1fr)_minmax(0,_2fr)] gap-4 h-[90%] max-h-[90%]">
