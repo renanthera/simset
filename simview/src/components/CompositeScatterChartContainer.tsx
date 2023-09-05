@@ -10,7 +10,7 @@ import {
 import CompositeScatterChart from '~/components/CompositeScatterChart'
 import { Selector } from '~/components/Selector'
 import { fetcher } from '~/utils/FetchData'
-import { TalentTree } from '~/components/TalentChart'
+import { TalentTreeFromData } from '~/components/TalentChart'
 
 import {
   HamburgerMenu,
@@ -143,7 +143,7 @@ export default function CompositeScatterChartContainer() {
         </div>
         <div>
           <HamburgerMenu>
-            <HamburgerChild label="Talents"><TalentTree height={740} width={640} spec_index={35} /></HamburgerChild>
+            <HamburgerChild label="Talents"><TalentTreeFromData talent_str={'BwQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAApQrkkEIJp0iAAAAkWSkEJSQRSikkSCQrRkSaCB'}/></HamburgerChild>
             <HamburgerChild label="02">02</HamburgerChild>
             <HamburgerChild label="03">03</HamburgerChild>
           </HamburgerMenu>

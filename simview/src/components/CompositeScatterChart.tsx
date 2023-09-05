@@ -54,10 +54,10 @@ export default function CompositeScatterChart({ data }) {
   }
 
   // TODO: Better system for this.
-  // Works ok at 1080p@90% zoom, but needs a more general solution.
+  // Works ok at 1080p@100% zoom, but needs a more general solution.
   // Font sizes based on breakpoints and a slightly smaller version should be
   // workable.
-  const height = 'h-[85vh]'
+  const height = 'h-[80vh]'
 
   // Hide the 'Actions' button at top right of charts, easy to turn off.
   const actions = false
