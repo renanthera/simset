@@ -19,6 +19,9 @@ $ corepack yarn dev
 
 add contents of [this page](https://www.raidbots.com/static/data/live/talents.json) into `simview/src/utils/talentData.ts` as `export const talentData`
 
+this process will get automated eventually, but it's hard, and downloading a
+single file occasionally is not.
+
 
 ## PERSISTENT WORKER
 
