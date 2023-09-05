@@ -271,8 +271,8 @@ export class View {
 
   input_dims: Dims<Bounds>
   view_scalar: number
-  connectors: FlatArray<LineSegment, 0>
-  points: FlatArray<Dims<number>, 0>
+  connectors: FlatArray<LineSegment, 1>
+  points: Array<Dims<number>>
 
   constructor(nodes: MappedNodes, view_dims: Dims<number>, padding: Dims<number>) {
     this.nodes = nodes
@@ -327,33 +327,27 @@ export class View {
 
   generate_connectors() {
     const findNode = (child_id: number) => (q: Node) => q.id === child_id
-    const rescaleChildren = (child_id: number) => {
+    const rescaleChildren = (parent_pos: Dims<number>) => (child_id: number) => {
       const full_child = Object.values(this.nodes).find(findNode(child_id))
       if (full_child) {
-        return this.rescale_point({ x: full_child.posX, y: full_child.posY })
+        return {
+          start: { ...parent_pos },
+          end: {...this.rescale_point({ x: full_child.posX, y: full_child.posY }) }
+        }
       }
     }
-    const combineChildrenWithParent = (parent_pos: Dims<number>) => (child_pos: Dims<number>) => {
-      return {
-        start: { ...parent_pos },
-        end: { ...child_pos }
-      }
-    }
-
     return Object.values(this.nodes).map(
       (parent: Node) => {
         const parent_pos = this.rescale_point({ x: parent.posX, y: parent.posY })
-        const children = parent.next.map(rescaleChildren)
-        return children.map(combineChildrenWithParent(parent_pos))
+        return parent.next.map(rescaleChildren(parent_pos))
       }
-    ).flat(Infinity)
-
+    ).flat(1)
   }
 
   generate_points() {
     return Object.values(this.nodes).map(
       (parent: Node) => {
-        const parent_pos = this.rescale_point({ x: parent.posX, y: parent.posY })
+        return this.rescale_point({ x: parent.posX, y: parent.posY })
       }
     )
   }
