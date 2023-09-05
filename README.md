@@ -17,6 +17,8 @@ $ corepack yarn pnpify prisma db push                 # if db is not initialized
 $ corepack yarn dev
 ```
 
+add contents of [this page](https://www.raidbots.com/static/data/live/talents.json) into `simview/src/utils/talentData.ts` as `export const talentData`
+
 
 ## PERSISTENT WORKER
 
