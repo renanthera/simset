@@ -1,28 +1,16 @@
-import {
-  talentData
-} from '~/utils/talentData'
+import { memo } from 'react'
 
 import {
-  compute_scalar,
-  rescale_point,
-  compute_input_bounds,
-  generate_lines,
-  generate_points,
-  min_length,
-
   TalentString,
   View,
+  LineSegment,
+  DimsWithID
 } from '~/utils/talents'
 
-interface TalentTreeConnectorProps {
-  nodes: any
-  width: number
-  height: number
-  padding: {
-    x: number
-    y: number
-  }
-}
+import tailwindConfig from '~/../tailwind.config'
+import resolveConfig from 'tailwindcss/resolveConfig'
+
+const colors = resolveConfig(tailwindConfig).theme.colors
 
 export const MapTalentChart = (limit: number) => ({ combinations }) => {
   if (!combinations) return
@@ -44,12 +32,8 @@ export const MapTalentChart = (limit: number) => ({ combinations }) => {
 
 function TalentChart({ combination }) {
   const talent_string = combination.r_combination.split('=')[1]
-  const url =
-    'https://www.raidbots.com/simbot/render/talents/'
-    + talent_string
-    + '?width=300&mini=1&level=60&bgcolor=330000'
   return (
-    <iframe className="h-[200px] overflow-y-hidden" src={url} />
+    <TalentTreeFromData talent_str={talent_string} width={260} height={170} padding={{ x: 10, y: 10 }} />
   )
 }
 
@@ -58,71 +42,116 @@ const TalentIcon = ({ spell, scalar }) => {
   const dim = scalar * 56
   const margin = Math.max(dim / 8, 1)
   return (
-      <a
-        href={'https://www.wowhead.com/spell=' + spell.id}
-      >
-        <rect
-          x={Math.round(spell.x - offset.x * scalar) - Math.round(margin / 2)}
-          y={Math.round(spell.y - offset.x * scalar) - Math.round(margin / 2)}
-          width={Math.round(dim) + Math.round(margin)}
-          height={Math.round(dim) + Math.round(margin)}
-          fill="red"
-        />
-        <image
-          href={'https://www.wowhead.com/images/wow/icons/large/' + spell.icon + '.jpg'}
-          x={Math.round(spell.x - offset.x * scalar)}
-          y={Math.round(spell.y - offset.x * scalar)}
-          width={Math.round(dim)}
-          height={Math.round(dim)}
-        />
-      </a>
+    <a
+      href={'https://www.wowhead.com/spell=' + spell.id}
+    >
+      <rect
+        x={Math.round(spell.x - offset.x * scalar) - Math.round(margin / 2)}
+        y={Math.round(spell.y - offset.x * scalar) - Math.round(margin / 2)}
+        width={Math.round(dim) + Math.round(margin)}
+        height={Math.round(dim) + Math.round(margin)}
+        fill="red"
+      />
+      <image
+        href={'https://www.wowhead.com/images/wow/icons/large/' + spell.icon + '.jpg'}
+        x={Math.round(spell.x - offset.x * scalar)}
+        y={Math.round(spell.y - offset.x * scalar)}
+        width={Math.round(dim)}
+        height={Math.round(dim)}
+      />
+    </a>
   )
 }
 
-function TalentTreeConnectors({ nodes, width, height, padding = { x: 50, y: 50 } }: TalentTreeConnectorProps) {
-  const view_dims = { x: width, y: height }
-  const input_bounds = compute_input_bounds(nodes)
-  const scalar = compute_scalar(input_bounds, view_dims, padding)
-  const lines = generate_lines(nodes, input_bounds, padding, scalar)
-  const points = generate_points(nodes, input_bounds, padding, scalar)
-  const point_scalar = min_length(lines) / 3
-  const line_scalar = point_scalar / 6
-  const img_scalar = (point_scalar * 2 ** 0.5) / 56       // 56 is side length of large icon
+const Tree = ({ nodes, view_dims, padding, allocated_talents }) => {
+  const {
+    connectors,
+    points,
+    line_scalar,
+    point_scalar
+  } = new View(nodes, view_dims, padding)
+
+  const red = (a, c) => {
+    return a ? a : c.id in allocated_talents
+  }
+
+  const two = (e, i) => {
+    const exists = nodes[e.id].entries.reduce(red, false)
+    return exists
+  }
 
   return (
     <>
-      <svg width={width} height={height}>
-        {lines.map((e, i) => (<line key={i} stroke="blue" strokeWidth={line_scalar} {...e} />))}
-        {points.map((e, i) => (<circle key={2 * i} fill="blue" r={line_scalar / 2} cx={e.cx} cy={e.cy} />))}
-        {points.map((e, i) => (<circle key={3 * i} fill="yellow" r={point_scalar} cx={e.cx} cy={e.cy} />))}
-        {/* {points.map((e, i) => (<TalentIcon spell={e} scalar={img_scalar} key={e.name} />))} */}
+      {connectors.map(
+        (e: LineSegment) => (
+          <line
+            key={e.id + '-1'}
+            strokeWidth={line_scalar}
+            stroke={false ? colors.bittersweet[600] : colors.woodsmoke[600]}
+            x1={e.start.x}
+            x2={e.end.x}
+            y1={e.start.y}
+            y2={e.end.y}
+          />))}
+      {points.map(
+        (e: DimsWithID<number, string>) => (
+          <circle
+            key={e.id + '-2'}
+            fill={colors.woodsmoke[600]}
+            r={line_scalar / 2}
+            cx={e.x} cy={e.y} />
+        ))}
+      {points.map(
+        (e: DimsWithID<number, string>, i) => (
+          <circle
+            key={e.id + '-3'}
+            fill={two(e) ? colors.bittersweet[600] : colors.woodsmoke[600]}
+            r={point_scalar}
+            cx={e.x}
+            cy={e.y}
+          />
+        ))}
+    </>
+  )
+}
+
+const filter_allocated = (nodes, allocated) => {
+  return Object.values(allocated).reduce(
+    (a, b) => {
+      const c = Object.values(nodes).reduce(
+        (d, e) => {
+          return d ? d : !!e.entries.find(g => g.id === b.id)
+        }, false)
+      return c ? { ...a, [b.id]: b } : a
+    }, {})
+}
+
+const MemoTree = memo(Tree)
+
+export function TalentTreeFromData({ width = 640, height = 740, padding = { x: 50, y: 50 }, talent_str }) {
+  const {
+    talent_data: {
+      classNodes,
+      specNodes
+    },
+    nodes,
+    allocated_talents
+  } = new TalentString({ talent_str: talent_str })
+
+  const allocated_class = filter_allocated(classNodes, allocated_talents)
+  const allocated_spec = filter_allocated(specNodes, allocated_talents)
+
+  const view_dims = { x: width / 2, y: height }
+
+  return (
+    <div className="flex flex-row">
+      <svg width={width / 2} height={height}>
+        <MemoTree nodes={classNodes} view_dims={view_dims} padding={padding} allocated_talents={allocated_class} />
       </svg>
-    </>
-  )
-}
-
-export function TalentTree({ spec_index, ...rest }) {
-  const n1 = talentData[spec_index].classNodes
-  const n2 = [...talentData[spec_index].classNodes, ...talentData[spec_index].specNodes]
-
-  return (
-    <>
-      <TalentTreeConnectors nodes={n1} width={"640"} height={740} />
-      {/* <TalentTreeConnectors nodes={n2} width={640} height={740} /> */}
-    </>
-  )
-}
-
-export function TalentTreeFromData({ width=640, height=740, padding={x:50,y:50}, ...rest}) {
-  const { nodes, allocated_talents } = new TalentString(rest)
-
-  const view_dims = { x: width, y: height }
-  const tmp = new View(nodes, view_dims, padding)
-  console.log(tmp)
-
-  return  (
-    <svg width={width} height={height}>
-    </svg>
+      <svg width={width / 2} height={height}>
+        <MemoTree nodes={specNodes} view_dims={view_dims} padding={padding} allocated_talents={allocated_spec} />
+      </svg>
+    </div>
   )
 }
 

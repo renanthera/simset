@@ -100,13 +100,13 @@ const range = (count: number) => {
 const reduceNodes = (accumulator, current) => {
   const new_current = {
     ...current,
-    entries: current.entries.sort(
-      (a, b) => {
-        if (a.index < b.index) return -1
-        if (a.index > b.index) return 1
-        return 0
-      }
-    )
+    // entries: current.entries.sort(
+    //   (a, b) => {
+    //     if (a.index < b.index) return 1
+    //     if (a.index > b.index) return -1
+    //     return 0
+    //   }
+    // )
   }
   return {
     ...accumulator,
@@ -163,6 +163,7 @@ export class TalentString {
     this.head = 0
     this.byte = 0
     this.node_order = [0]
+    this.talents = []
 
     this.talent_str = talent_str
     this.allocated_talents = allocated_talents
@@ -190,8 +191,8 @@ export class TalentString {
         let rank = trait.maxRanks
         if (this.get_bits(1)) rank = this.get_bits(TalentString.rank_bits)
         if (this.get_bits(1)) {
-          let index = this.get_bits(TalentString.choice_bits)
-          let trait = this.nodes[node].entries[index]
+          const index = this.get_bits(TalentString.choice_bits)
+          trait = this.nodes[node].entries[index]
         }
         data[trait.id] = { ...trait, ranks: rank }
       }
@@ -232,7 +233,7 @@ type Dims<T> = {
 
 type Start = Dims<number>
 type End = Dims<number>
-type LineSegment = { start: Start, end: End }
+export type LineSegment = { start: Start, end: End, id: string }
 
 type Bounds = {
   min: number,
@@ -264,6 +265,8 @@ type Child = {
 
 type MappedNodes = Record<number, Node>
 
+export type DimsWithID<T, U> = Dims<T> & { id: U}
+
 export class View {
   nodes: MappedNodes
   view_dims: Dims<number>
@@ -272,17 +275,23 @@ export class View {
   input_dims: Dims<Bounds>
   view_scalar: number
   connectors: FlatArray<LineSegment, 1>
-  points: Array<Dims<number>>
+  points: Array<DimsWithID<number, string>>
+  point_scalar: number
+  line_scalar: number
+  img_scalar: number
 
   constructor(nodes: MappedNodes, view_dims: Dims<number>, padding: Dims<number>) {
-    this.nodes = nodes
+    this.nodes     = nodes
     this.view_dims = view_dims
-    this.padding = padding
+    this.padding   = padding
 
-    this.input_dims = this.compute_input_dims()
-    this.view_scalar = this.compute_view_scalar()
-    this.connectors = this.generate_connectors()
-    this.points = this.generate_points()
+    this.input_dims   = this.compute_input_dims()
+    this.view_scalar  = this.compute_view_scalar()
+    this.connectors   = this.generate_connectors()
+    this.points       = this.generate_points()
+    this.point_scalar = this.min_length() / 3
+    this.line_scalar  = this.point_scalar / 6
+    this.img_scalar   = this.point_scalar * 2 ** 0.5 / 56
   }
 
   rescale_point(pos: Dims<number>): Dims<number> {
@@ -325,20 +334,21 @@ export class View {
     )
   }
 
-  generate_connectors() {
+  generate_connectors(): FlatArray<LineSegment, 1> {
     const findNode = (child_id: number) => (q: Node) => q.id === child_id
-    const rescaleChildren = (parent_pos: Dims<number>) => (child_id: number) => {
-      const full_child = Object.values(this.nodes).find(findNode(child_id))
-      if (full_child) {
+    const rescaleChildren = (parent_pos: DimsWithID<number, string>) => (child_id: number) => {
+      const child = Object.values(this.nodes).find(findNode(child_id))
+      if (child) {
         return {
-          start: { ...parent_pos },
-          end: {...this.rescale_point({ x: full_child.posX, y: full_child.posY }) }
+          start: { x: parent_pos.x, y: parent_pos.y },
+          end: { ...this.rescale_point({ x: child.posX, y: child.posY }) },
+          id: parent_pos.id + '-' + child.id.toString()
         }
       }
     }
     return Object.values(this.nodes).map(
       (parent: Node) => {
-        const parent_pos = this.rescale_point({ x: parent.posX, y: parent.posY })
+        const parent_pos = { ...this.rescale_point({ x: parent.posX, y: parent.posY }), id: parent.id.toString() }
         return parent.next.map(rescaleChildren(parent_pos))
       }
     ).flat(1)
@@ -347,8 +357,16 @@ export class View {
   generate_points() {
     return Object.values(this.nodes).map(
       (parent: Node) => {
-        return this.rescale_point({ x: parent.posX, y: parent.posY })
+        return { ...this.rescale_point({ x: parent.posX, y: parent.posY }), id: parent.id.toString() }
       }
     )
+  }
+
+  min_length() {
+    return this.connectors.reduce(
+      (min: number, segment: LineSegment) => {
+        const length = ((segment.start.x - segment.end.x)**2 + (segment.start.y - segment.end.y) ** 2) ** 0.5
+        return min < length ? min : length
+      }, Infinity)
   }
 }

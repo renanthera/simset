@@ -1,6 +1,6 @@
 'use client'
 import { VegaLite } from 'react-vega'
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
 import { all_sims, selected_sims } from '~/utils/ChartSchemas'
 import { PrettyPrintJSON } from '~/components/PrettyPrintJSON'
@@ -62,7 +62,7 @@ export default function CompositeScatterChart({ data }) {
   // Hide the 'Actions' button at top right of charts, easy to turn off.
   const actions = false
 
-  const TalentChart = MapTalentChart(12)
+  const TalentChart = memo(MapTalentChart(12))
 
   return (
     <div className="grid grid-cols-[minmax(0,_1fr)_minmax(0,_2fr)] gap-4 h-[90%] max-h-[90%]">
