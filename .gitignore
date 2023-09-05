@@ -1,14 +1,15 @@
 # general
 */.yarn
 */.env*
-*/simc
 
 # simview
 simview/generated
 simview/.next
 simview/.pnp.*
+simview/src/utils/talentData.ts
 
 # persistent-worker
 persistent-worker/node_modules
 persistent-worker/bin
 persistent-worker/yarn-error.log
+persistent-worker/simc
