@@ -8,8 +8,6 @@ simview/generated
 simview/.next
 simview/.pnp.*
 
-simview/yarn.lock
-
 # persistent-worker
 persistent-worker/node_modules
 persistent-worker/bin
