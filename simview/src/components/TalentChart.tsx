@@ -1,10 +1,12 @@
-import { memo } from 'react'
+import React, { memo } from 'react'
 
 import {
   TalentString,
   View,
   LineSegment,
-  DimsWithID
+  Point,
+  MappedNodes,
+  Child
 } from '~/utils/talents'
 
 import tailwindConfig from '~/../tailwind.config'
@@ -63,49 +65,75 @@ const TalentIcon = ({ spell, scalar }) => {
   )
 }
 
-const Tree = ({ nodes, view_dims, padding, allocated_talents }) => {
+const filter_allocated = (nodes, allocated) => {
+  return Object.values(allocated).reduce(
+    (a, b) => {
+      const c = Object.values(nodes).reduce(
+        (d, e) => {
+          return d ? d : !!e.entries.find(g => g.id === b.id)
+        }, false)
+      return c ? { ...a, [b.nodeId]: b } : a
+    }, {})
+}
+
+interface TreeProps {
+  nodes: MappedNodes
+  view_dims: Point<number>
+  padding: Point<number>
+  allocated_talents: Record<number, Child>
+  style_fns: any
+}
+
+type Connector = {
+  key: string
+  strokeWidth: number
+  x: number
+  x2: number
+  y1: number
+  y2: number
+  endpointIDs: Array<number>
+}
+
+const Tree = ({ nodes, view_dims, padding, allocated_talents, style_fns }: TreeProps) => {
+  const view = new View(nodes, view_dims, padding)
   const {
-    connectors,
     points,
     line_scalar,
     point_scalar
-  } = new View(nodes, view_dims, padding)
+  } = view
 
-  const red = (a, c) => {
-    return a ? a : c.id in allocated_talents
-  }
+  const connectors = view.connector_elements(1)
 
-  const two = (e, i) => {
-    const exists = nodes[e.id].entries.reduce(red, false)
-    return exists
+  const {
+    in_allocated,
+    ends_in_allocated
+  } = style_fns
+
+  const connectorID = (e: LineSegment) => e.start.id.toString() + '-' + e.end.id.toString()
+  const pointID = (e: Point<number>) => e.id.toString()
+
+  const t = (e: Array<number>) => e.every((u: number) => u in allocated_talents) ? colors.bittersweet[600] : colors.woodsmoke[600]
+  const q = (e: Connector) => {
+    const {endpointIDs, key, ...props} = e
+    return (<line key={key} stroke={t(endpointIDs)} {...props}/>)
   }
 
   return (
     <>
-      {connectors.map(
-        (e: LineSegment) => (
-          <line
-            key={e.id + '-1'}
-            strokeWidth={line_scalar}
-            stroke={false ? colors.bittersweet[600] : colors.woodsmoke[600]}
-            x1={e.start.x}
-            x2={e.end.x}
-            y1={e.start.y}
-            y2={e.end.y}
-          />))}
+      {connectors.map(q)}
       {points.map(
-        (e: DimsWithID<number, string>) => (
+        (e: Point<number>) => (
           <circle
-            key={e.id + '-2'}
+            key={pointID(e) + '-2'}
             fill={colors.woodsmoke[600]}
             r={line_scalar / 2}
             cx={e.x} cy={e.y} />
         ))}
       {points.map(
-        (e: DimsWithID<number, string>, i) => (
+        (e: Point<number>, i) => (
           <circle
-            key={e.id + '-3'}
-            fill={two(e) ? colors.bittersweet[600] : colors.woodsmoke[600]}
+            key={pointID(e) + '-3'}
+            fill={in_allocated(e, allocated_talents) ? colors.bittersweet[600] : colors.woodsmoke[600]}
             r={point_scalar}
             cx={e.x}
             cy={e.y}
@@ -115,16 +143,18 @@ const Tree = ({ nodes, view_dims, padding, allocated_talents }) => {
   )
 }
 
-const filter_allocated = (nodes, allocated) => {
-  return Object.values(allocated).reduce(
-    (a, b) => {
-      const c = Object.values(nodes).reduce(
-        (d, e) => {
-          return d ? d : !!e.entries.find(g => g.id === b.id)
-        }, false)
-      return c ? { ...a, [b.id]: b } : a
-    }, {})
-}
+/* {connectors.map(
+*   (e: LineSegment) => (
+*     <line
+*       key={connectorID(e) + '-1'}
+*       strokeWidth={line_scalar}
+*       stroke={ends_in_allocated(e, allocated_talents) ? colors.bittersweet[600] : colors.woodsmoke[600]}
+*       x1={e.start.x}
+*       x2={e.end.x}
+*       y1={e.start.y}
+*       y2={e.end.y}
+*     />))} */
+
 
 const MemoTree = memo(Tree)
 
@@ -134,24 +164,31 @@ export function TalentTreeFromData({ width = 640, height = 740, padding = { x: 5
       classNodes,
       specNodes
     },
-    nodes,
     allocated_talents
   } = new TalentString({ talent_str: talent_str })
 
+  const view_dims = { x: width / 2, y: height }
   const allocated_class = filter_allocated(classNodes, allocated_talents)
   const allocated_spec = filter_allocated(specNodes, allocated_talents)
 
-  const view_dims = { x: width / 2, y: height }
+  const style_fns = {
+    in_allocated: (e: Point<number>, allocated_talents: MappedNodes) => e.id in allocated_talents,
+    ends_in_allocated: (e: LineSegment, allocated_talents: MappedNodes) => style_fns.in_allocated(e.start, allocated_talents) && style_fns.in_allocated(e.end, allocated_talents)
+  }
 
   return (
     <div className="flex flex-row">
-      <svg width={width / 2} height={height}>
-        <MemoTree nodes={classNodes} view_dims={view_dims} padding={padding} allocated_talents={allocated_class} />
-      </svg>
-      <svg width={width / 2} height={height}>
-        <MemoTree nodes={specNodes} view_dims={view_dims} padding={padding} allocated_talents={allocated_spec} />
-      </svg>
+      <TalentTree nodes={classNodes} view_dims={view_dims} padding={padding} allocated_talents={allocated_class} style_fns={style_fns} />
+      <TalentTree nodes={specNodes} view_dims={view_dims} padding={padding} allocated_talents={allocated_spec} style_fns={style_fns} />
     </div>
+  )
+}
+
+export function TalentTree({ nodes, view_dims, padding, allocated_talents, style_fns}) {
+  return (
+    <svg width={view_dims.x} height={view_dims.y}>
+        <MemoTree nodes={nodes} view_dims={view_dims} padding={padding} allocated_talents={allocated_talents} style_fns={style_fns} />
+    </svg>
   )
 }
 

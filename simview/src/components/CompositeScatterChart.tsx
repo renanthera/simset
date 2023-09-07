@@ -6,6 +6,8 @@ import { all_sims, selected_sims } from '~/utils/ChartSchemas'
 import { PrettyPrintJSON } from '~/components/PrettyPrintJSON'
 import { MapTalentChart } from '~/components/TalentChart'
 
+import { TalentString } from '~/utils/talents'
+
 const filter = (min: number, max: number) => ({ y }: { y: number }) => (y >= min && y <= max)
 
 type Brush_Bounds = {
@@ -63,6 +65,25 @@ export default function CompositeScatterChart({ data }) {
   const actions = false
 
   const TalentChart = memo(MapTalentChart(12))
+
+  /* const tmp = data.reduce(
+*   (a, v) => {
+*     const str = v.r_combination.split('=')[1]
+*     const { allocated_talents } = new TalentString({talent_str: str})
+*     const count = Object.values(allocated_talents).reduce(
+*       (b, w) => {
+*         return {
+*           woo: w.name === 'Weapons of Order' ? b.woo + 1 : b.woo,
+*           pta: w.name === 'Press the Advantage' ? b.pta + 1 : b.pta
+*         }
+*       }, {woo:0,pta:0})
+*     return {
+*       woo: a.woo + count.woo,
+*       pta: a.pta + count.pta
+*     }
+*   }, {woo: 0, pta: 0})
+
+* console.log(tmp) */
 
   return (
     <div className="grid grid-cols-[minmax(0,_1fr)_minmax(0,_2fr)] gap-4 h-[90%] max-h-[90%]">

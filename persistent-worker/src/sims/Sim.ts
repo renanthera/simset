@@ -3,7 +3,7 @@ import { spawn } from 'child_process'
 import { readFile, unlink } from 'node:fs'
 
 const url_base = 'http://localhost:3000'
-const DBG = false
+const DBG = true
 
 export class Sim {
   id: number
