@@ -2,9 +2,15 @@ import {
   talentData
 } from '~/utils/talentData'
 
+import tailwindConfig from '~/../tailwind.config'
+import resolveConfig from 'tailwindcss/resolveConfig'
+
+const colors = resolveConfig(tailwindConfig).theme.colors
+
 interface TalentStringConstructor {
-  talent_str: string
-  allocated_talents: Array<any>
+  talent_str?: string
+  allocated_talents?: Array<any>
+  spec_id?: number
 }
 
 const range = (count: number) => {
@@ -55,7 +61,8 @@ export class TalentString {
 
   // input
   talent_str: string
-  allocated_talents
+  allocated_talents: any
+  allocated_data: any
 
   // traits
   version_id: number
@@ -69,7 +76,7 @@ export class TalentString {
   nodes: any
   node_order: Array<number>
 
-  constructor({ talent_str, allocated_talents }: TalentStringConstructor) {
+  constructor({ talent_str, allocated_talents, spec_id }: TalentStringConstructor) {
     this.version_id = 0
     this.spec_id = 0
     this.tree = 0
@@ -78,11 +85,30 @@ export class TalentString {
     this.byte = 0
     this.node_order = [0]
 
-    this.talent_str = talent_str
+    this.talent_str = talent_str || ''
     this.allocated_talents = allocated_talents
+    this.spec_id = spec_id || 0
 
-    if (talent_str) this.allocated_talents = this.decode_talent_str()
+    if (talent_str) {
+      this.allocated_talents = this.decode_talent_str()
+      this.allocated_data = {
+        allocated_class: this.filter_allocated(this.talent_data.classNodes),
+        allocated_spec: this.filter_allocated(this.talent_data.specNodes)
+      }
+    }
     if (allocated_talents) this.talent_str = this.encode_talent_str()
+    if (spec_id) this.talent_data = TalentString.talentData[spec_id]
+  }
+
+  filter_allocated(filter) {
+    return Object.values(this.allocated_talents).reduce(
+      (a, b) => {
+        const c = Object.values(filter).reduce(
+          (d, e) => {
+            return d ? d : !!e.entries.find(g => g.id === b.id)
+          }, false)
+        return c ? { ...a, [b.nodeId]: b } : a
+      }, {})
   }
 
   encode_talent_str() {
@@ -182,7 +208,6 @@ export type Child = {
 
 export class View {
   nodes: MappedNodes
-  allocated_nodes: MappedNodes
   view_dims: Point<number>
   padding: Point<number>
 
@@ -310,6 +335,167 @@ export class View {
           y1: e.start.y,
           y2: e.end.y,
           endpointIDs: [e.start.id, e.end.id]
+        }
+      }
+    )
+  }
+}
+
+export type Line = {
+  id: string
+  x1: number
+  x2: number
+  y1: number
+  y2: number
+  strokeWidth: number
+  stroke: string
+}
+
+export type Circle = {
+  id: string
+  cx: number
+  cy: number
+  r: number
+  fill: string
+  onClick: (e: any) => void
+  onContextMenu: (e: any) => void
+}
+
+export class TalentTreeStringView extends View {
+  allocated: MappedNodes
+  lines: Array<Line>
+  small_circles: Array<Circle>
+  big_circles: Array<Circle>
+
+  constructor(
+    nodes: MappedNodes,
+    view_dims: Point<number>,
+    padding: Point<number>,
+    allocated: MappedNodes
+  ) {
+    super(nodes, view_dims, padding)
+    this.allocated = allocated
+
+    this.lines = this.line_elements(1)
+    this.small_circles = this.circle_elements(2, this.line_scalar / 2)
+    this.big_circles = this.circle_elements(3, this.point_scalar)
+  }
+
+  point_in_allocated(point: Point<number>) {
+    return point.id in this.allocated
+  }
+
+  segment_in_allocated(segment: LineSegment) {
+    return this.point_in_allocated(segment.start) && this.point_in_allocated(segment.end)
+  }
+
+  line_elements(id: number) {
+    const connectorID = (e: LineSegment) => e.start.id.toString() + '-' + e.end.id.toString()
+    return this.connectors.map(
+      (e: LineSegment): Line => {
+        return {
+          id: connectorID(e) + '-' + id.toString(),
+          x1: e.start.x,
+          x2: e.end.x,
+          y1: e.start.y,
+          y2: e.end.y,
+          strokeWidth: this.line_scalar,
+          stroke: this.segment_in_allocated(e) ? colors.bittersweet[600] : colors.woodsmoke[600]
+        }
+      }
+    )
+  }
+
+  circle_elements(id: number, radius: number) {
+    const pointID = (e: Point<number>) => e.id.toString() + '-' + id.toString()
+    return this.points.map(
+      (e: Point<number>): Circle => {
+        return {
+          id: pointID(e),
+          cx: e.x,
+          cy: e.y,
+          r: radius,
+          fill: this.point_in_allocated(e) ? colors.bittersweet[600] : colors.woodsmoke[600]
+        }
+      }
+    )
+  }
+}
+
+export class TalentTreeSelectorView extends View {
+  lines: Array<Line>
+  small_circles: Array<Circle>
+  big_circles: Array<Circle>
+  update_coloring: (n: Record<number, number>) => void
+  coloring: Record<number, number>
+
+  constructor(
+    nodes: MappedNodes,
+    view_dims: Point<number>,
+    padding: Point<number>,
+    coloring: Record<number, boolean>,
+    update_coloring: (n: Record<number, boolean>) => void
+  ) {
+    super(nodes, view_dims, padding)
+
+    this.coloring = coloring
+    this.update_coloring = update_coloring
+    this.lines = this.line_elements(1)
+    this.small_circles = this.circle_elements(2, this.line_scalar / 2)
+    this.big_circles = this.circle_elements(3, this.point_scalar)
+  }
+
+  line_elements(id: number) {
+    const connectorID = (e: LineSegment) => e.start.id.toString() + '-' + e.end.id.toString()
+    const color = (e: LineSegment) => this.coloring[e.start.id] && this.coloring[e.end.id]
+    return this.connectors.map(
+      (e: LineSegment): Line => {
+        return {
+          id: connectorID(e) + '-' + id.toString(),
+          x1: e.start.x,
+          x2: e.end.x,
+          y1: e.start.y,
+          y2: e.end.y,
+          strokeWidth: this.line_scalar,
+          stroke: color(e) ? colors.woodsmoke[600] : colors.woodsmoke[600]
+        }
+      }
+    )
+  }
+
+  circle_elements(id: number, radius: number) {
+    const color_map: Record<number, string> = {
+      [1]: colors.viking[600],
+      [0]: colors.woodsmoke[600],
+      [-1]: colors.bittersweet[600]
+    }
+    const color = (e: Point<number>): string => color_map[this.coloring[e.id]]
+
+    const pointID = (e: Point<number>) => e.id.toString() + '-' + id.toString()
+    const onClick = (e) => {
+      const index = Number(e.target.id.split('-')[0])
+      if (this.coloring[index] < 1) {
+        this.update_coloring({ [index]: this.coloring[index] + 1 })
+      }
+    }
+    const onRightClick = (e) => {
+      e.preventDefault()
+      const index = Number(e.target.id.split('-')[0])
+      if (this.coloring[index] > -1) {
+        this.update_coloring({ [index]: this.coloring[index] - 1 })
+      }
+    }
+    return this.points.map(
+      (e: Point<number>): Circle => {
+        return {
+          id: pointID(e),
+          cx: e.x,
+          cy: e.y,
+          r: radius,
+          // fill: this.coloring[e.id] ? colors.bittersweet[600] : colors.woodsmoke[600],
+          fill: color(e) || colors.woodsmoke[100],
+          onClick: onClick,
+          onContextMenu: onRightClick
         }
       }
     )
