@@ -67,6 +67,7 @@ Typescript capabilities toward the end for View and derived classes
 time, at the cost of more code on the worker (boo)
 * worker too big, so writing a different worker would SUCK
 * the scatter plots aren't very useful
+* i ignored a lot of useful tools while early on in js/ts/react growing pains
 
 ## TODO (no particular order):
 * draw icons on talent trees
