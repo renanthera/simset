@@ -4,6 +4,9 @@ uses editorconfig, so please use that!
 
 ## SIMVIEW WEB SERVER
 
+might not work on anything beyond nodejs v20.5.1. had issues with the initial
+v20.6.1 release
+
 configure login information for postgresql server in `simview/.env`
 ```
 DATABASE_URL="postgresql://user:pass@ip:port/table_name"
