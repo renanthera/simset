@@ -38,12 +38,12 @@ $ corepack yarn dev
 * End-to-end sim generation and execution via Create
 * Crude sim result visualizations with talent-based filtering options in
 Single Sim
-* - All Sims scatter plot for all data in the Set/Sim/F-Combination selection.
-* - Selected Sims scatter plot for all data in selected mean dps interval on All
+* All Sims scatter plot for all data in the Set/Sim/F-Combination selection.
+* Selected Sims scatter plot for all data in selected mean dps interval on All
 Sims chart.
-* - Text info on selected points for All Sims/Selected Sims selections
-* - Top 12 Talent Trees in Selected Sims selection
-* - Hamburger Menu Talent Tree filter shows only sims with talent x if blue, and
+* Text info on selected points for All Sims/Selected Sims selections
+* Top 12 Talent Trees in Selected Sims selection
+* Hamburger Menu Talent Tree filter shows only sims with talent x if blue, and
 without talent x if red. Requires reselecting the Sim Selection to update filter.
 
 ### Issues
@@ -58,6 +58,7 @@ like to add to them though)
 * good learning experience, javascript is kinda horrible, and I only really used
 Typescript capabilities toward the end for View and derived classes
 * the scatter plots look pretty ok
+* oh the capability to write static pages in markdown is kinda cool as well
 
 ### Things I Don't Like
 * its slow
