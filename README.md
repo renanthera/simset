@@ -34,7 +34,7 @@ $ corepack yarn install
 $ corepack yarn dev
 ```
 
-### Features
+## Features
 * End-to-end sim generation and execution via Create
 * Crude sim result visualizations with talent-based filtering options in
 Single Sim
@@ -46,12 +46,12 @@ Sims chart.
 * Hamburger Menu Talent Tree filter shows only sims with talent x if blue, and
 without talent x if red. Requires reselecting the Sim Selection to update filter.
 
-### Issues
+## Issues
 * It's just really slow
 * A lot of first-time code
 * Likely scales poorly to different display sizes.
 
-### Things I Like
+## Things I Like
 * the talent tree charts are AWESOME and very pretty (have some other things i'd
 like to add to them though)
 * end-to-end running sims works pretty well
@@ -60,7 +60,7 @@ Typescript capabilities toward the end for View and derived classes
 * the scatter plots look pretty ok
 * oh the capability to write static pages in markdown is kinda cool as well
 
-### Things I Don't Like
+## Things I Don't Like
 * its slow
 * it feels like i was just writing so many map, reduce and filter callbacks.
 * probably do more data transformation on the worker to save client and server
