@@ -1,6 +1,7 @@
-these methods may not be optimal, I'm still figuring it out :P
+At this point, this project is abandoned.
+It served its purpose as a personal introduction to nodejs/react/typescript, but would require significant website reworks to be adaptable to fit the design requirements.
 
-uses editorconfig, so please use that!
+I'm definitely interested in coming back to this project with fresh eyes and a broader set of skills at some point in the future.
 
 ## SIMVIEW WEB SERVER
 
